@@ -1,63 +1,100 @@
-# Coordinator handoff — M0 / M1 first playable
+# Coordinator handoff — M2 Core Gameplay Systems
 
 ## Status
 
-The actual Godot project and first playable movement course are implemented. M0 is validated. M1 is implemented and passes automated physics validation; detailed human movement-feel acceptance remains. The user saw the first version and said **“yes it looks good.”**
+- **M0 and M1: complete and explicitly user-approved**, including the current movement implementation.
+- **M2: implemented, playable and verified.** All five requested core systems are present.
+- **M3/M4: not started.** Training targets are stationary damage fixtures, not enemy AI. Production art is being developed separately; current presentation remains temporary.
+- Work branch: `feat/m2-core-gameplay`, based on M0/M1 commit `819069c` in `mattheand/runebound`.
 
-The workspace originally contained only `specs.md`, agent instructions and concept references. No reusable prototype was available. Work followed `specs.md` and the visual direction in `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md`.
+The source of truth remains `specs.md`. The supplied art direction lives at `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md`.
 
-## Implemented
+## M2 implementation
 
-- Godot **4.7.2 stable**, GDScript, Compatibility renderer, 640 × 360 logical resolution.
-- Main menu → movement course → return to menu.
-- Reusable CharacterBody2D controller with configurable Resource tuning.
-- Acceleration/braking, air steering, gravity, variable-height jumping and one air jump.
-- 100 ms coyote time, 120 ms jump buffering, landing reset and unlimited-jump prevention.
-- Collision against solid terrain, smooth bounded Camera2D follow.
-- 2,560-pixel TileMapLayer course with steps, gaps, low ceiling and double-jump ledge.
-- Restart and fall reset, controls/diagnostics HUD, keyboard and gamepad mappings.
-- Original temporary hero/scenery visuals retaining blond hair, blue tunic, red cape and fjord colors. Cyan air-jump feedback.
-- Single-threaded browser export with development files excluded.
+### Health and player lifecycle
 
-## Verified
+`scripts/components/health_component.gd` is reusable and actor-independent. It starts with three hearts by default and exposes:
 
-- Project import and headless startup: no errors.
-- **36 checks at each of 30, 60 and 120 physics ticks/s: 108 passing assertions, zero failures.** Tests exercise real input and engine collisions.
-- Native macOS rendered gameplay captured and inspected.
-- Chrome WebGL 2 smoke test exercises menu, movement/double-jump, restart and menu return; captures inspected; no runtime/resource/HTTP errors.
-- Read-only code review found no Critical/Important issues. One minor zero-buffer setting bug was reproduced and fixed with regression tests.
-- Export initially omitted the preloaded tuning script; the preset now includes all runtime resources with explicit docs/tests/tools/build exclusions.
+- `take_damage(amount: int, impulse: Vector2 = Vector2.ZERO) -> bool`: accepts a hit only while alive and vulnerable; clamps health at zero.
+- `heal(amount: int)`: clamps to maximum, rejects nonpositive amounts and does not revive dead actors.
+- `kill()`: one-shot death, bypassing invulnerability for falls/kill planes.
+- `reset_health(grace_seconds: float = 0.0)`: explicit revive/restore.
+- Signals: `health_changed(current, maximum)`, `damaged(amount, impulse)`, `died`.
 
-## Play / test
+The player applies damage knockback and a 180 ms steering/jump stun, cancels combat and clears buffered jump state. Default damage invulnerability is 800 ms. Death freezes input/motion and plays brief rotation/fade feedback. Respawn restores all three hearts with 800 ms grace and clears movement, jump, stun, attack and visual death state.
+
+### Sword combat
+
+`scenes/player/sword_combat.*` uses a single physics clock for temporary slash presentation and hitbox activity. `scripts/resources/combat_tuning.gd` defaults to **80 ms wind-up / 100 ms active / 220 ms recovery**, one damage and directional knockback.
+
+`HitboxComponent` queries `HurtboxComponent` Areas on layer 4. Team IDs exclude self/friendly hits. Each swing records **health-owner IDs**, preventing repeated damage from sustained overlaps or multiple hurtboxes on one target. Facing locks at swing start. Holding J does not auto-repeat; wind-up/recovery cannot deal damage, and hurt/death/reset cancel the attack.
+
+Stationary training dummies demonstrate health, knockback, hit flash, defeat and reset. Spike Areas demonstrate repeated contact damage gated by player invulnerability. Slash/impact flashes, hurt flicker, death feedback and short original synthesized SFX provide temporary feedback.
+
+### Checkpoints and respawning
+
+Reusable checkpoint Areas activate on contact with a living player and show an activation pulse/active marker. `LevelProgress` stores the latest checkpoint ID and global spawn point. The level waits **650 ms** after death, then restores the player there. Falling follows the same lifecycle; **R** returns immediately to the latest checkpoint.
+
+Respawning resets training targets and player state while preserving the active checkpoint and collected runes. Safe spawn offsets keep checkpoint returns clear of hazards. No asynchronous scene callback survives a menu transition.
+
+### Rune collection and HUD
+
+`scenes/collectibles/rune.*` provides floating/glowing pickups with explicit IDs, bound to the level-local `LevelProgress` node. Only registered, uncollected IDs increment the counter. Duplicate IDs cannot inflate totals; duplicate instances of a collected ID remain hidden. Collection persists through death and R. Starting a new session from the menu recreates progress.
+
+`scenes/ui/gameplay_hud.gd` subscribes to health/progress signals, showing hearts plus numeric health, runes, active checkpoint and short status messages. Heart icons are drawn polygons, so Web rendering does not depend on OS fallback fonts.
+
+### Playable area
+
+`scenes/levels/gameplay_test.tscn` is a 1,920-pixel training course containing **five runes, two checkpoints, two dummies, two spike patches, a gap and raised platforms**. The menu opens this scene by default and retains the approved M1 movement playground as a separate option.
+
+## Verified evidence
+
+`bash tools/check.sh` imports the project, checks main-scene startup and runs:
+
+| Suite | Checks at each rate | Rates |
+|---|---:|---|
+| Movement regression (`tests/run_tests.gd`) | 36 | 30 / 60 / 120 Hz |
+| M2 systems/lifecycle (`tests/test_gameplay.gd`) | 62 | 30 / 60 / 120 Hz |
+| Full M2 route (`tests/test_traversal.gd`) | 22 | 30 / 60 / 120 Hz |
+
+**360 passing assertions; zero failures, engine errors or warnings in the final run.** Tests use actual Godot input, scene instances and collisions.
+
+The complete route uses input actions only—no teleports, hazard disabling or health cheats—to collect all five runes and reach both checkpoints with three hearts intact. The systems suite additionally verifies damage/death, sword timing/deduplication, real pickup/checkpoint overlaps, HUD updates, respawn persistence and fresh-session reset.
+
+Native macOS rendering was captured and inspected. The single-threaded Web export builds successfully and passes the Chrome smoke test with no runtime/resource/HTTP errors. Inspected browser captures show sword damage, 2/3 hearts after spikes, restored 3/3 health and a persistent 1/5 rune count after R. Missing Unicode heart glyphs discovered during Web inspection were fixed using drawn icons.
+
+Read-only review found no actionable M2 functional issues and independently ran the 62-check systems suite at 60 Hz. Final HUD/traversal changes were subsequently validated in the complete suite and browser checks.
+
+## Play / reproduce
 
 ```bash
-bash tools/godot.sh                 # Play
+bash tools/godot.sh                 # Play; select Start gameplay
 bash tools/godot.sh --editor        # Edit
-bash tools/check.sh                 # Import + startup + physics suite
+bash tools/check.sh                 # Full validation
+bash tools/godot.sh --script tools/capture_preview.gd
 ```
 
-Browser preview: **http://localhost:8765** while the local server is running. To restart it:
+Controls: **A/D or arrows** move; **Space** jump/double-jump; **J** sword; **R** return to checkpoint; **Escape** menu. Gamepad mappings: stick/D-pad, A, X, LB, Start respectively.
+
+Browser preview: **http://localhost:8765** while the local server runs. Regenerate/serve with:
 
 ```bash
+mkdir -p build/web
+bash tools/godot.sh --headless --editor --export-release Web build/web/index.html
 python3.13 -m http.server 8765 --bind 127.0.0.1 --directory build/web
 ```
 
-Controls: A/D or arrows; Space for jump/double-jump; R restart; Escape menu.
+Godot **4.7.2 stable** is installed locally at `~/Applications/Godot.app` with matching single-threaded Web export templates. Launcher also supports PATH or `GODOT`. On other machines, use an installed Python 3 executable for serving.
 
-Engine installed locally at `~/Applications/Godot.app`; launcher also supports PATH or `GODOT`. Builds and screenshots are under `build/web/` and `build/screenshots/`; logs under `build/test-results/`. Build outputs are regenerable and excluded from Git.
+Builds: `build/web/`. Captures: `build/screenshots/`, including `browser-m2-sword.png`, `browser-m2-damage.png`, `browser-m2-respawn.png` and `native-gameplay.png`. Test logs: `build/test-results/`. These outputs are regenerable and excluded from Git.
 
-## Read next
+## Remaining checks and next direction
 
-- `README.md`: launch, controls, export.
-- `docs/architecture.md`: scene boundaries and controller behavior.
-- `docs/testing.md`: commands, evidence and remaining acceptance checks.
-- `docs/asset-pipeline.md`: placeholder conventions and source references.
-- `docs/roadmap.md`: milestone status.
-- `scenes/player/player.gd`, `scripts/resources/player_tuning.gd`: movement implementation/tuning.
-- `scenes/levels/movement_test.gd`: course geometry and reset flow.
+- **Outstanding compatibility:** physical gamepads, Firefox/Safari, Windows/Linux, additional window sizes and sustained performance profiling. Native macOS and Chrome WebGL 2 have been checked.
+- **M2 hands-on follow-up:** sword feel, hurt/respawn pacing and temporary sound balance. Automated tests do not claim subjective audio quality.
+- Rune/checkpoint progress is session-local, not saved to disk; this matches M2 scope.
+- No known critical or progression-blocking issue remains in the verified scope.
+- Keep temporary artwork until separately produced assets arrive. Swap presentation using the existing signals and sword timing contract.
+- **Await M2 feedback. Do not begin M3 or M4 without further direction.**
 
-## Remaining / next
-
-Obtain detailed movement-feel feedback and a full hands-on course traversal. Physical gamepad, Firefox/Safari, Windows/Linux and sustained performance testing remain unverified. The user approved the initial appearance, not every acceptance check.
-
-After closing the M1 feel gate, proceed to **M2: health, sword combat, checkpoints, runes and basic gameplay UI**. These systems have not been implemented. Keep visual polish incremental and preserve the reference identity. No known critical blocker remains.
+See `README.md`, `docs/architecture.md`, `docs/testing.md`, `docs/asset-pipeline.md` and `docs/roadmap.md` for additional detail.

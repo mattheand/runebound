@@ -41,11 +41,28 @@ const assert = require('node:assert/strict');
     await page.keyboard.press('r');
     await page.waitForTimeout(800);
     await page.screenshot({ path: 'build/screenshots/browser-restart.png' });
+    // Approach the first training target, swing, then walk into the spikes.
+    await page.keyboard.down('d');
+    await page.waitForTimeout(850);
+    await page.keyboard.up('d');
+    await page.waitForTimeout(150);
+    await page.keyboard.down('j');
+    await page.waitForTimeout(120);
+    await page.screenshot({ path: 'build/screenshots/browser-m2-sword.png' });
+    await page.keyboard.up('j');
+    await page.waitForTimeout(400);
+    await page.keyboard.down('d');
+    await page.waitForTimeout(500);
+    await page.keyboard.up('d');
+    await page.screenshot({ path: 'build/screenshots/browser-m2-damage.png' });
+    await page.keyboard.press('r');
+    await page.waitForTimeout(900);
+    await page.screenshot({ path: 'build/screenshots/browser-m2-respawn.png' });
     await page.keyboard.press('Escape');
     await page.waitForTimeout(300);
     await page.screenshot({ path: 'build/screenshots/browser-return-menu.png' });
     assert.deepEqual(errors, [], 'web export has no runtime/resource/HTTP errors');
-    console.log('PASS: browser startup and keyboard smoke test; screenshots saved for visual review');
+    console.log('PASS: M2 browser startup, movement, sword, hazard and restart smoke; screenshots saved for visual review');
   } finally {
     await browser.close();
   }

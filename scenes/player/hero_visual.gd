@@ -4,17 +4,41 @@ extends Node2D
 var facing: int = 1
 var stride: float = 0.0
 var burst_time: float = 0.0
+var hurt_time: float = 0.0
+var death_time: float = 0.0
 
 
 func _process(delta: float) -> void:
 	var body := get_parent() as CharacterBody2D
+	var health = body.get_node("HealthComponent")
+	if health.is_dead():
+		death_time += delta
+		rotation = minf(death_time * 4.0, PI / 2.0)
+		modulate.a = maxf(0.2, 1.0 - death_time)
+		return
+	facing = body.facing
 	if absf(body.velocity.x) > 1.0:
-		facing = 1 if body.velocity.x > 0.0 else -1
 		stride += delta * absf(body.velocity.x) * 0.08
 	else:
 		stride = 0.0
 	burst_time = maxf(0.0, burst_time - delta)
+	hurt_time = maxf(0.0, hurt_time - delta)
+	modulate = Color(2, 1, 1) if hurt_time > 0.0 else Color.WHITE
+	if health.invulnerability_left > 0.0:
+		modulate.a = 0.45 if int(health.invulnerability_left * 16) % 2 == 0 else 1.0
 	queue_redraw()
+
+
+func on_damaged() -> void:
+	hurt_time = 0.12
+
+
+func reset_pose() -> void:
+	death_time = 0.0
+	hurt_time = 0.0
+	burst_time = 0.0
+	rotation = 0.0
+	modulate = Color.WHITE
 
 
 func on_jumped(is_double: bool) -> void:

@@ -16,4 +16,8 @@ run_check startup --headless --quit-after 10
 for ticks in 30 60 120; do
   run_check "physics-$ticks" --headless --fixed-fps "$ticks" \
     --script res://tests/run_tests.gd -- "--ticks=$ticks"
+  run_check "gameplay-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_gameplay.gd -- "--ticks=$ticks"
+  run_check "traversal-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_traversal.gd -- "--ticks=$ticks"
 done

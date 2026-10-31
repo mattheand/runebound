@@ -270,8 +270,7 @@ func test_playground() -> void:
 	var menu: Control = load("res://scenes/main/main.tscn").instantiate()
 	root.add_child(menu)
 	current_scene = menu
-	var buttons := menu.find_children("*", "Button", true, false)
-	buttons[0].pressed.emit()
+	menu.find_child("MovementButton", true, false).pressed.emit()
 	await frames(2)
 	var course := current_scene
 	check(course != null and course.name == "MovementTest", "Start opens the playable course")

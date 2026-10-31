@@ -7,7 +7,10 @@ func _initialize() -> void:
 
 
 func _capture() -> void:
-	var scene: Node = load("res://scenes/levels/movement_test.tscn").instantiate()
+	var scene_path := "res://scenes/levels/gameplay_test.tscn"
+	if OS.get_cmdline_user_args().has("--movement"):
+		scene_path = "res://scenes/levels/movement_test.tscn"
+	var scene: Node = load(scene_path).instantiate()
 	root.add_child(scene)
 	for index in 60:
 		await physics_frame

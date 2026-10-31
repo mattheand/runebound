@@ -4,20 +4,26 @@ extends Control
 func _ready() -> void:
 	var column := VBoxContainer.new()
 	column.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	column.position = Vector2(-170, -112)
-	column.size = Vector2(340, 224)
+	column.position = Vector2(-170, -140)
+	column.size = Vector2(340, 280)
 	column.add_theme_constant_override("separation", 12)
 	add_child(column)
 	_add_label(column, "R U N E B O U N D", 30, Color("e9d8a6"))
 	_add_label(column, "THE NINE REALMS", 14, Color("72c7d0"))
-	_add_label(column, "M0 / M1  •  Movement playground", 14, Color("bbced6"))
+	_add_label(column, "M2  •  Core gameplay training", 14, Color("bbced6"))
 	var start := Button.new()
-	start.text = "Start movement test"
+	start.name = "StartGameplay"
+	start.text = "Start gameplay"
 	start.custom_minimum_size.y = 38
 	start.pressed.connect(_start)
 	column.add_child(start)
 	start.grab_focus()
-	_add_label(column, "A / D or arrows · Space to jump twice", 13, Color("bbced6"))
+	var movement := Button.new()
+	movement.name = "MovementButton"
+	movement.text = "Movement playground (M1)"
+	movement.pressed.connect(func() -> void: get_tree().change_scene_to_file("res://scenes/levels/movement_test.tscn"))
+	column.add_child(movement)
+	_add_label(column, "A / D · Space to jump twice · J for sword", 13, Color("bbced6"))
 	if not OS.has_feature("web"):
 		var quit_button := Button.new()
 		quit_button.text = "Quit"
@@ -35,7 +41,7 @@ func _add_label(parent: Node, text: String, font_size: int, color: Color) -> voi
 
 
 func _start() -> void:
-	get_tree().change_scene_to_file("res://scenes/levels/movement_test.tscn")
+	get_tree().change_scene_to_file("res://scenes/levels/gameplay_test.tscn")
 
 
 func _draw() -> void:

@@ -2,7 +2,7 @@
 
 Read `specs.md` before making architectural or gameplay decisions.
 
-Read `docs/design/ART_DIRECTION.md` and inspect the reference images before implementing visual assets.
+Read `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md` and inspect the reference images before implementing visual assets.
 
 ## Development rules
 
@@ -17,4 +17,4 @@ Read `docs/design/ART_DIRECTION.md` and inspect the reference images before impl
 
 ## Immediate priority
 
-Implement Milestones M0 and M1 from `specs.md`: initialize the Godot project and create a playable movement test with running, jumping, double-jumping, collisions, and camera following.
+M0 and M1 are complete and user-approved. M2 is implemented and verified; read `docs/HANDOFF.md` for its components and tests. Address M2 feedback using temporary artwork; production assets are being developed separately. Do not start M3 or M4 without further direction. Preserve the movement playground and document outstanding browser/controller compatibility checks.
