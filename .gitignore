@@ -1,0 +1,6 @@
+.godot/
+.idea/
+.DS_Store
+build/*
+!build/.gdignore
+*.tmp
