@@ -3,7 +3,7 @@
 ## Status / source control
 
 - **M0–M3 approved.** `feat/m3-enemies-boss` was fast-forward merged into `main` at **`410b3ba`**, all **700 existing assertions passed on merged main**, and main was pushed.
-- **M4 implemented, playable and verified; awaiting hands-on level-flow/pacing acceptance.** Work branch: `feat/m4-troll-bridge-level`.
+- **M4 implemented, playable and verified; awaiting hands-on level-flow/pacing acceptance.** Published branch: `feat/m4-troll-bridge-level`; implementation commit **`171070a`**. Main retains the accepted M3 version until M4 is accepted.
 - **M5 has not started.** Current presentation is provisional. Both art handoffs remain preserved for later visual integration under the existing ten-criterion gate.
 - **Art Handoff 2 intake:** committed separately as **`eee7fc2`**, preserving both supplied full/compact archives, original images, manifests and instructions. No enemy attack timing or combat mechanics were changed for that intake.
 

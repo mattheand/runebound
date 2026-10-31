@@ -45,7 +45,7 @@
 ## Task 4 — Handoff
 
 - [x] Update README, roadmap, testing/architecture and `docs/HANDOFF.md` with instructions, evidence, known issues and deferred M5 gate.
-- [ ] Commit/publish M4 branch for user review; do not start M5.
+- [x] Commit/publish M4 branch for user review (`171070a`, `feat/m4-troll-bridge-level`); do not start M5.
 
 ## Verified outcome
 
