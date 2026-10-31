@@ -1,0 +1,83 @@
+{
+  "pack": "RUN\u0415BOUND Hero Sprite Pack v1",
+  "frame_size": [
+    32,
+    48
+  ],
+  "facing": "right",
+  "anchor": "bottom_center",
+  "feet_reference_pixel": [
+    16,
+    46
+  ],
+  "layout": "horizontal strips, left-to-right, one row per animation",
+  "animations": {
+    "idle": {
+      "file": "assets/characters/hero/hero_idle.png",
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "run": {
+      "file": "assets/characters/hero/hero_run.png",
+      "frames": 8,
+      "fps": 10,
+      "loop": true
+    },
+    "jump": {
+      "file": "assets/characters/hero/hero_jump.png",
+      "frames": 2,
+      "fps": 8,
+      "loop": false
+    },
+    "fall": {
+      "file": "assets/characters/hero/hero_fall.png",
+      "frames": 2,
+      "fps": 8,
+      "loop": true
+    },
+    "double_jump": {
+      "file": "assets/characters/hero/hero_double_jump.png",
+      "frames": 2,
+      "fps": 10,
+      "loop": false
+    },
+    "land": {
+      "file": "assets/characters/hero/hero_land.png",
+      "frames": 2,
+      "fps": 8,
+      "loop": false
+    },
+    "attack": {
+      "file": "assets/characters/hero/hero_attack.png",
+      "frames": 6,
+      "fps": 10,
+      "loop": false
+    },
+    "hurt": {
+      "file": "assets/characters/hero/hero_hurt.png",
+      "frames": 2,
+      "fps": 7,
+      "loop": false
+    },
+    "victory": {
+      "file": "assets/characters/hero/hero_victory.png",
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "death": {
+      "file": "assets/characters/hero/hero_death.png",
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    }
+  },
+  "notes": [
+    "Integrate as visuals only; keep CharacterBody2D collider and movement scripts unchanged.",
+    "Nearest-neighbor filtering; PNG transparent backgrounds.",
+    "AnimatedSprite2D: load individual 32\u00d748 regions in order, FPS as specified.",
+    "Weapon hitboxes are controlled by combat logic, not inferred from pixels.",
+    "Art is an original small-scale pixel-art implementation of the approved character design; review aesthetics in-engine before considering final."
+  ]
+}

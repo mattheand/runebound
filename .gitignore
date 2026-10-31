@@ -4,3 +4,5 @@
 build/*
 !build/.gdignore
 *.tmp
+# Supplied archive retained locally; extracted source/assets are tracked.
+/RUNEBOUND_Art_Handoff_v1.zip

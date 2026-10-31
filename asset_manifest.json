@@ -1,0 +1,59 @@
+{
+  "version": "1.0.0",
+  "status": "prototype production-format, not final illustrated quality",
+  "hero": {
+    "frame": [
+      32,
+      48
+    ],
+    "reference": "docs/design/hero_reference_approved.png",
+    "manifest": "assets/characters/hero/manifest.json"
+  },
+  "environment": {
+    "logical_canvas": [
+      640,
+      360
+    ],
+    "layers_back_to_front": [
+      "sky_640x360.png",
+      "mountains_640x360.png",
+      "fjord_640x360.png",
+      "forest_640x360.png"
+    ],
+    "tilesize": [
+      16,
+      16
+    ],
+    "tiles": [
+      "grass_top",
+      "dirt",
+      "stone",
+      "stone_cracked",
+      "moss_stone",
+      "wood_plank",
+      "wood_end",
+      "rune_stone"
+    ],
+    "tile_atlas": "assets/environments/midgard/terrain_tiles_16.png",
+    "repeat": "not guaranteed seamless; static scene backdrop usable, wrap/repeat requires editing"
+  },
+  "rune_pickup": {
+    "sheet": "assets/collectibles/rune_pickup_16x16_6f.png",
+    "size": [
+      16,
+      16
+    ],
+    "frames": 6,
+    "fps": 8
+  },
+  "checkpoint": {
+    "sheet": "assets/interactables/checkpoint_flag_32x48_4f.png",
+    "size": [
+      32,
+      48
+    ],
+    "frames": 4,
+    "fps": 5
+  },
+  "license": "Original procedurally created assets in this package; review project-wide licensing before public release"
+}

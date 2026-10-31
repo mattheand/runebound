@@ -1193,7 +1193,37 @@ Deliver:
 - Visual effects.
 - Music and sound effects.
 
-Gate: Game appearance is coherent and substantially reflects the supplied concept art.
+### Required M5 gate — playable visual fidelity
+
+Source of truth: `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`, `docs/design/hero_reference_approved.png`, and `docs/design/01_hero_character.webp` through `04_boss_encounter.webp`. The original reference pack under `docs/design/RUNEBOUND_Visual_References/` remains preserved. These images define the approved visual identity; they are not sprite sheets, collision maps, or guaranteed compositable backgrounds. Never crop a promotional composition into a purported gameplay environment.
+
+Do not begin M5 early. Its acceptance requires an actual running Godot level, screenshots and a short recording at gameplay resolution, plus a pass/fail table and side-by-side concept-vs-runtime comparisons for **all ten** criteria:
+
+| Criterion | Required evidence / result |
+|---|---|
+| 1. Hero identity | Recognizably blond Viking, blue tunic, flowing red cape, small shield and seax; expressive, readable silhouette at 640×360. Foot anchor and collisions remain correct. |
+| 2. Consistent pixel language | Harmonized grid, pixel scale, palette and shading across hero, terrain, enemies, particles and UI; no blurred scaling or accidental mixed resolutions. |
+| 3. Norwegian specificity | Rich, legible fjord geography, steep mountains, spruce/pine forests, waterfalls, wooden bridges and traditional Norse/Norwegian architectural details rather than generic grassland. |
+| 4. Layered world depth | Independent sky, distant mountain, fjord/water, forest and foreground/gameplay layers. Capture parallax in motion and verify seams and camera jitter are absent. |
+| 5. Animation and interactions | Real frame-based, expressive hero idle/run/jump/fall/attack/hurt animations, enemy/boss animation, and rune/checkpoint feedback. Placeholder procedural motion is not final animation. |
+| 6. Foreground readability | Traversable collision surfaces, platforms, hazards, enemies and interactables remain distinguishable from detailed backgrounds. |
+| 7. Atmosphere | Color, light and effects convey the welcoming Nordic world and mythic rune accents of the approved references without obscuring play. |
+| 8. Asset provenance | Creator/source/license records for external assets; no copyrighted commercial game assets or unlicensed music. |
+| 9. Quality evidence | Actual Godot screenshots/recording, reference-vs-runtime comparison images, explicit significant-gap list and documented fixes before requesting sign-off. |
+| 10. No regressions | Existing Godot tests, browser build and gameplay traversal remain working. Record exact environments, outcomes and unsupported checks. |
+
+**PASS requires evidence for all ten criteria, no unresolved significant visual gap, and human visual acceptance of the demonstrated gameplay.** If significant differences remain, report **NEEDS ART ITERATION**, prioritize and resolve them, then request approval using fresh gameplay captures. Replacing placeholders or importing a pack alone does not complete M5. Do not invent objective fidelity percentages.
+
+### Provisional art handoff integration contract
+
+`asset_manifest.json` describes the first art handoff. Its assets are reusable **provisional integration assets**, not final production-quality graphics:
+
+- Hero: transparent, right-facing 32×48 horizontal animation strips; counts/FPS and feet reference `[16, 46]` in `assets/characters/hero/manifest.json`.
+- Environment: independent 640×360 RGBA sky, mountains, fjord and forest layers under `assets/environments/midgard/`; seamless looping is not guaranteed and must be authored/verified before parallax repetition.
+- Terrain: eight 16×16 tiles; collision remains separately defined in Godot.
+- Pickups: six-frame 16×16 runes and four-frame 32×48 checkpoints, with metadata in the manifest.
+
+Use nearest-neighbor filtering and preserve animation/anchor metadata. Integrate presentation incrementally while keeping accepted movement, physics, hitbox timing, checkpoint and collection behavior intact. Adapt animation playback to gameplay timing, not gameplay timing to a first-pass sheet. Replace or refine these assets as necessary to meet the visual gate. Keep concept references out of production exports and maintain a playable build throughout.
 
 ## Milestone M6 — Public demo
 

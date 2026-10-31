@@ -33,9 +33,32 @@
 
 **Gate evidence:** the complete input-driven route collects every rune and reaches both checkpoints without damage; integration tests verify sword interactions, damage/death, pickup persistence and HUD updates.
 
-**Next action:** collect M2 hands-on feedback. Production art is developed separately. Do not start M3 or M4 without further direction.
+**Acceptance:** user approved M2, subject to hands-on feedback. `feat/m2-core-gameplay` was fast-forward merged into `main` at `856a666`, the 360-check suite passed on the merged result, and main was pushed.
 
-Later gates remain as defined in `../specs.md`: enemies/boss (M3), complete Troll Bridge level (M4), visual/audio polish (M5), public demo validation/distribution (M6).
+## M3 — Enemies and boss: in progress
+
+Implement in order: Draugr, Raven, Bridge Troll, then a combat-testing room. Use reusable health/damage components, configurable tuning and temporary visuals. Preserve M0–M2 and verify enemy state transitions, attacks, boss defeat and retry. M4/M5 stay blocked until M3 is reviewed and accepted.
+
+## M5 — Visual polish: deferred, mandatory visual acceptance gate
+
+The first art handoff is extracted and available for later incremental integration. It is provisional, not a final production art release. Intake details and caveats: `handoff/ART_HANDOFF_INTEGRATION.md`; metadata: `../asset_manifest.json`; authoritative gate: `handoff/M5_VISUAL_GATE_AGENT_PROMPT.md` and M5 in `../specs.md`.
+
+M5 must demonstrate an actual playable Godot level, screenshots and a short gameplay-resolution recording. Provide a pass/fail table and side-by-side reference/runtime comparisons covering:
+
+1. Approved blond Viking identity, blue tunic, red cape, shield/seax, expressive animation and stable foot anchor/collision.
+2. Consistent pixel grid, scale, palette and shading across all game assets/UI.
+3. Rich Norwegian fjords, steep mountains, pine/spruce forests, waterfalls, bridges and Norse architecture.
+4. Independent background/foreground layers with parallax verified in motion, without seams or camera jitter.
+5. Real frame-based hero/enemy/boss animations and readable rune/checkpoint interactions.
+6. Clear foreground terrain, hazards, enemies and interactive elements against detailed scenery.
+7. Welcoming Nordic atmosphere and mythic rune accents consistent with references.
+8. Documented creator/source/license provenance for external assets.
+9. Actual in-game comparison evidence and resolution of significant visual gaps.
+10. Passing established Godot tests, browser checks and gameplay traversal, with exact environments and unsupported checks recorded.
+
+**PASS requires all ten evidenced criteria, no significant unresolved visual gap, and human visual acceptance.** Otherwise report **NEEDS ART ITERATION** and resolve prioritized differences before requesting approval. No fidelity percentages and no completion claim based solely on placeholder replacement. Preserve gameplay throughout; provisional art may be replaced/refined without changing accepted mechanics.
+
+M4 (complete Troll Bridge level) and M6 (public demo) remain as defined in `../specs.md`.
 
 ## First playable artifacts
 
