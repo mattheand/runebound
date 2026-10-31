@@ -35,7 +35,7 @@
 
 **Acceptance:** user approved M2, subject to hands-on feedback. `feat/m2-core-gameplay` was fast-forward merged into `main` at `856a666`, the 360-check suite passed on the merged result, and main was pushed.
 
-## M3 — Enemies and boss: implemented and verified, awaiting review
+## M3 — Enemies and boss: complete and approved
 
 - Draugr: bounded patrol, sight-based detection/chase, telegraphed melee, hurt/knockback and death.
 - Raven: flight patrol, fixed-aim warning/dive, recovery/route return, hurt and death.
@@ -44,11 +44,26 @@
 - Selectable combat room with 1/2/3 opponent selection, R retry and automatic death reset. Previous M1/M2 scenes remain selectable.
 - Verification: 700 assertions pass, covering prior gameplay, art contracts and M3 at 30/60/120 physics Hz. Standard-input tests defeat every type with default health/sword/jumps and no retries. Chrome/native captures and a recorded Troll victory provide runtime evidence.
 
-**Next action:** user hands-on M3 review and balance/telegraph feedback. M4/M5 stay blocked until M3 is reviewed and accepted.
+**Acceptance:** user approved M3 subject to further hands-on feedback. The branch was fast-forward merged into `main` at `410b3ba`, all 700 assertions reran green on merged main, and main was pushed.
+
+## M4 — Complete Troll Bridge level: implemented and verified, awaiting review
+
+- One authored adventure through Starting Forest, Forest Cliffs, optional Hidden Cave, Stave Church Vista and Troll Bridge.
+- 38 platforming beats, 15 ordinary enemies, nine checkpoints and the accepted Troll encounter.
+- Seven runes; any five open the bridge. All five required runes are available without the cave, whose two pickups provide an optional alternative/reward.
+- Sword-opened cave entrance, E-operated switch/passages, persistent world flags and separate cave respawn/camera context.
+- Health-restoring checkpoints, repaired bridge/retried encounters, retained rune progress and a preserved boss defeat.
+- Pause/resume, section/objective HUD, boss arena locks and completion screen with runes/deaths/time/replay/menu.
+- 1,087 automated assertions pass: prior regressions, both art contracts, M4 lifecycle checks and two full input-driven completion routes. Native full-route captures and Chrome smoke provide runtime evidence.
+- Review caught a surface-fall landing on the cave roof; a failing regression reproduced it and the surface kill plane now triggers above that roof. Gate artwork matches full collision height.
+
+**Pacing:** 5–10 minutes is the first-play design target, not a measured human result. Both efficient known-route tests finish in about 3:23 with no deaths (7/7 via cave; 5/7 on the main route). First-time timing, repetition/flow, cave discoverability and encounter balance require hands-on review.
+
+**Next action:** obtain M4 acceptance and address feedback. Do not begin M5 before that approval.
 
 ## M5 — Visual polish: deferred, mandatory visual acceptance gate
 
-The first art handoff is extracted and available for later incremental integration. It is provisional, not a final production art release. Intake details and caveats: `handoff/ART_HANDOFF_INTEGRATION.md`; metadata: `../asset_manifest.json`; authoritative gate: `handoff/M5_VISUAL_GATE_AGENT_PROMPT.md` and M5 in `../specs.md`.
+Both art handoffs are preserved for later visual integration. They are provisional, not final production releases. Handoff 2's enemy sheets require segmentation/alignment and are excluded from runtime imports until prepared. Intake details: `handoff/ART_HANDOFF_INTEGRATION.md` and `handoff/ART_HANDOFF_2_INTAKE.md`; enemy processing contract: `handoff/ART_HANDOFF_2_INTEGRATION.md`. The authoritative visual gate remains `handoff/M5_VISUAL_GATE_AGENT_PROMPT.md` and M5 in `../specs.md`.
 
 M5 must demonstrate an actual playable Godot level, screenshots and a short gameplay-resolution recording. Provide a pass/fail table and side-by-side reference/runtime comparisons covering:
 
@@ -65,7 +80,7 @@ M5 must demonstrate an actual playable Godot level, screenshots and a short game
 
 **PASS requires all ten evidenced criteria, no significant unresolved visual gap, and human visual acceptance.** Otherwise report **NEEDS ART ITERATION** and resolve prioritized differences before requesting approval. No fidelity percentages and no completion claim based solely on placeholder replacement. Preserve gameplay throughout; provisional art may be replaced/refined without changing accepted mechanics.
 
-M4 (complete Troll Bridge level) and M6 (public demo) remain as defined in `../specs.md`.
+M6 (public demo) remains as defined in `../specs.md`.
 
 ## First playable artifacts
 

@@ -1,4 +1,4 @@
-# Verification — M0 through M3 and provisional art intake
+# Verification — M0 through M4 and provisional art intake
 
 ## Environment
 
@@ -14,7 +14,7 @@
 bash tools/check.sh
 ```
 
-The wrapper runs import, 43 art-contract checks and startup, then seven suites at 30 / 60 / 120 physics ticks per second with matching fixed render rates. It fails for a nonzero process exit **or** Godot script/error diagnostics. Logs go to `build/test-results/`.
+The wrapper runs import, both art-contract suites and startup, then eight suites at 30 / 60 / 120 physics ticks per second with matching fixed render rates, followed by two complete M4 input routes at 60 Hz. It fails for a nonzero process exit **or** Godot script/error diagnostics. Logs go to `build/test-results/`.
 
 | Suite | Checks per rate | Verified result |
 |---|---:|---|
@@ -25,8 +25,12 @@ The wrapper runs import, 43 art-contract checks and startup, then seven suites a
 | `tests/test_boss.gd` — Troll mechanics | 38 | Pass at 30/60/120 Hz |
 | `tests/test_combat_room.gd` — selection/intro/retry/completion | 17 | Pass at 30/60/120 Hz |
 | `tests/test_combat_victory.gd` — standard-input victories | 10 | Pass at 30/60/120 Hz |
+| `tests/test_adventure.gd` — M4 world/lifecycle/UI | 44 | Pass at 30/60/120 Hz |
+| `tests/test_full_level.gd` — both M4 completion routes | 240 total | Pass at 60 Hz |
+| `tests/test_art_import.gd` — first art handoff | 43 | Pass, once |
+| `tests/test_enemy_art_sources.gd` — second art handoff | 15 | Pass, once |
 
-**Total: 700 passing assertions** (219 × 3 tick rates + 43 art-contract checks), zero failures. Import/startup and suite logs contain no engine/script errors or warnings. M0–M2 were explicitly accepted by the user. Before M3 work, M2 was fast-forward merged into `main` at `856a666` and all 360 pre-art/pre-M3 assertions were rerun green on main.
+**Total: 1,087 passing assertions** (263 × 3 tick rates + 240 full-level checks + 58 art checks), zero failures. Import/startup and suite logs contain no engine/script errors or warnings. Before M4, accepted M3 was fast-forward merged into `main` at `410b3ba`, its full 700-assertion suite reran green on main, and main was pushed. Earlier M2 was merged and revalidated at `856a666`.
 
 ### Movement regression
 
@@ -91,7 +95,33 @@ All three enemies were defeated with **3/3 hearts and no retries** at 30/60/120 
 
 ### Art intake
 
-`test_art_import.gd` verifies 43 metadata/dimension/transparency contracts for the supplied PNGs. It does not judge fidelity or seamless parallax. See `handoff/ART_HANDOFF_INTEGRATION.md`. M5 remains deferred behind its ten-criterion human visual gate.
+`test_art_import.gd` verifies 43 metadata/dimension/transparency contracts for handoff 1. `test_enemy_art_sources.gd` checks 15 source dimensions/transparency/alias/reference contracts for handoff 2 by loading original PNGs directly. The second sheets are not equal-grid atlases and are excluded from runtime imports until prepared. These checks do not judge frame alignment, fidelity or seamless parallax. See the two intake documents under `handoff/`; M5 remains deferred behind M4 acceptance and its ten-criterion human visual gate.
+
+### M4 world and lifecycle
+
+`test_adventure.gd` covers five-rune gate thresholds, persistent cave flags/runes, death count and cave checkpoint context, completion preconditions/idempotence/time freeze, fresh sessions, physical gate collision, sword-opened stone and living-player-only E interaction. The shipped scene tests real menu entry, pause/time/movement freeze and resume, pickup, checkpoint healing, surface/cave/boss retries, cave switch/passage, camera/arena locks, full-depth boss bridge destruction/repair, persistent boss defeat after another death, exit, result UI, replay and menu return.
+
+Read-only review found a surface-fall trap: a gap above the cave could land the player on its roof at y=784, above the original surface death threshold. A regression reproduced it before the fix; surface death now triggers at y=720 and the test verifies automatic checkpoint recovery, retained runes and surface context. Cave depth uses its separate threshold. Closed gate artwork was also extended to match its full 320px collision height.
+
+### M4 full-level input routes
+
+`test_full_level.gd` drives the shipped player through the authored terrain using named movement, jump, sword and interaction actions. Its known routes do not teleport, change health/tuning, disable enemies, award runes directly or invoke boss damage. The cave passages relocate the actor through the actual E-operated gameplay mechanism. A Raven guarding a landing is dodged using the normal jump/air-jump controls before continuing.
+
+| Route | Assertions | Runes | Deaths | Simulated level time |
+|---|---:|---:|---:|---:|
+| Optional cave, switch and vault | 122 | 7/7 | 0 | 203.50 s |
+| Main route, cave bypassed | 118 | 5/7 | 0 | 203.52 s |
+
+Both routes open the five-rune gate, defeat the Troll with the accepted sword/jumps and reach the real completion screen. They verify that the cave is optional and does not lock progression. The full routes run at the production 60 Hz physics setting; component/lifecycle and all existing movement/combat suites also run at 30/120 Hz.
+
+**Pacing limitation:** the 5–10-minute first-play target has not been measured with a first-time human player. These efficient known-route runs take about 3:23, excluding reading/exploration/retries. M4 flow, repetition, discovery and difficulty still need hands-on acceptance; no first-time duration is claimed from the automated result.
+
+To reproduce individual routes:
+
+```bash
+bash tools/godot.sh --headless --fixed-fps 60 --script tests/test_full_level.gd -- --cave-only
+bash tools/godot.sh --headless --fixed-fps 60 --script tests/test_full_level.gd -- --main-only
+```
 
 ## Native rendering
 
@@ -99,7 +129,15 @@ All three enemies were defeated with **3/3 hearts and no retries** at 30/60/120 
 bash tools/godot.sh --script tools/capture_preview.gd
 ```
 
-This opens the M3 scene in a real rendering window, waits for physics and drawing, then saves `build/screenshots/native-gameplay.png`. Add `-- --opponent=troll` or `-- --opponent=raven` for an approached opponent capture, `-- --gameplay` for M2, or `-- --movement` for M1.
+This opens M4 in a real rendering window and saves `build/screenshots/native-gameplay.png`. Add `-- --combat` or `-- --opponent=troll`/`raven` for M3, `-- --gameplay` for M2, or `-- --movement` for M1.
+
+The full M4 native capture tool drives the real cave route and captures all five sections, boss defeat and completion:
+
+```bash
+bash tools/godot.sh --fixed-fps 60 --script tools/capture_adventure.gd
+```
+
+The final capture run passed 131 route/capture assertions and completed with 7/7 runes, zero deaths, and about 203.7 simulated seconds (two additional scenic stops). Inspected files: `m4-forest.png`, `m4-cliffs.png`, `m4-cave.png`, `m4-vista.png`, `m4-bridge.png`, `m4-boss-victory.png`, `m4-completion.png` under `build/screenshots/`. These are actual Godot captures, not supplied concept art. Allow the tool to finish; laptop sleep or window closure interrupts rendered checks.
 
 To reproduce the rendered standard-input Troll victory and short native recording:
 
@@ -128,7 +166,7 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
 node tests/browser_smoke.cjs
 ```
 
-Run `tests/browser_combat.cjs` with the same environment for M3. The M2 smoke test explicitly selects the second menu entry; M3 remains the default.
+Run `tests/browser_combat.cjs` with the same environment for M3, and `tests/browser_adventure.cjs` for M4. M4 is now the default entry; the M3 and M2 scripts explicitly select their respective menu buttons.
 
 Alternatively omit `CHROME` when Playwright's Chromium is installed. `GAME_URL` overrides the default `http://127.0.0.1:8765`.
 
@@ -140,14 +178,16 @@ Browser inspection caught native-only fallback font support for Unicode hearts. 
 
 The first browser run caught a missing exported `player_tuning.gd`; exporting all runtime resources with explicit development exclusions fixed it. The final Chrome smoke run reported no runtime/resource/HTTP errors.
 
-M3 Chrome smoke also passes with no runtime/resource/HTTP errors. Captures cover selector changes, a hurt Draugr after a sword hit, the Raven warning/aim line, Troll introduction and reduced boss health, slam/jump, retry and the three-entry menu. Inspect `browser-m3-*.png` under `build/screenshots/`. Boss-bar styling was adjusted after visual inspection so its default theme minimum size could not overlap the message row. Runtime state/damage correctness is asserted by the Godot suites, not inferred only from changing pixels.
+M3 Chrome smoke also passes with no runtime/resource/HTTP errors. Captures cover selector changes, a hurt Draugr after a sword hit, the Raven warning/aim line, Troll introduction and reduced boss health, slam/jump, retry and menu return. Inspect `browser-m3-*.png` under `build/screenshots/`. Boss-bar styling was adjusted after visual inspection so its default theme minimum size could not overlap the message row. Runtime state/damage correctness is asserted by the Godot suites, not inferred only from changing pixels.
+
+M4 Chrome smoke passed with no runtime/resource/HTTP errors. Inspected `browser-m4-*.png` captures show forest exploration, an actual 1/7 rune pickup, pause/resume, R returning to start with that rune preserved, and return to the four-entry menu. The complete level is verified natively/input-driven; the browser smoke is not a claim of full cross-browser or full browser-route testing.
 
 ## Remaining manual/compatibility checks
 
-1. Review M3 difficulty, telegraph clarity, Raven counterplay, boss recovery windows and temporary sound balance.
-2. Fight each type with normal inputs; retry during attacks/death and switch trials using the selector.
-3. Check all Troll patterns, jumping the smash/slam, bridge damage/repair and the defeat/exit sequence.
-4. Verify gamepad stick/D-pad, A jump, X sword, LB retry and Start menu on physical hardware.
-5. Check Firefox/Safari, other browser/window sizes, and desktop targets as available.
+1. Play M4 without the known route and measure first-time duration, flow/repetition, cave discoverability and checkpoint spacing.
+2. Try the cave and the main-only path, pause/resume, and death/R from different sections.
+3. Judge encounter balance, boss approach/arena, bridge damage and the final exit/completion flow.
+4. Verify hardware gamepad movement, jump, sword, B interaction, LB checkpoint and Start pause.
+5. Check Firefox/Safari, other browser/window sizes, desktop targets and sustained performance as available.
 
-Firefox, Safari, Windows, Linux, hardware gamepads and sustained 60 FPS performance remain untested. M0–M2 are accepted; M3 awaits human review. Audio playback paths ran without errors, but subjective sound quality/mix is not an automated test claim. M4/M5 stay deferred.
+Firefox, Safari, Windows, Linux, hardware gamepads and sustained 60 FPS performance remain untested. M0–M3 are accepted; M4 awaits human review. Audio playback paths ran without errors, but subjective sound quality/mix is not an automated test claim. M5 stays deferred until M4 is tested and approved.

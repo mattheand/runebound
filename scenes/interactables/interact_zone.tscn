@@ -1,0 +1,25 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="Script" path="res://scenes/interactables/interact_zone.gd" id="1"]
+[sub_resource type="CircleShape2D" id="Reach"]
+radius = 32.0
+
+[node name="InteractZone" type="Area2D"]
+collision_layer = 0
+collision_mask = 2
+monitorable = false
+script = ExtResource("1")
+
+[node name="Shape" type="CollisionShape2D" parent="."]
+position = Vector2(0, -16)
+shape = SubResource("Reach")
+
+[node name="Hint" type="Label" parent="."]
+offset_left = -90.0
+offset_top = -60.0
+offset_right = 90.0
+theme_override_colors/font_color = Color(0.9, 0.94, 0.85, 1)
+theme_override_colors/font_shadow_color = Color(0.05, 0.12, 0.16, 1)
+theme_override_constants/shadow_offset_x = 1
+theme_override_constants/shadow_offset_y = 1
+theme_override_font_sizes/font_size = 12
+horizontal_alignment = 1

@@ -7,7 +7,10 @@ func _initialize() -> void:
 
 
 func _capture() -> void:
-	var scene_path := "res://scenes/levels/combat_test.tscn"
+	var scene_path := "res://scenes/levels/troll_bridge.tscn"
+	for argument in OS.get_cmdline_user_args():
+		if argument == "--combat" or argument.begins_with("--opponent="):
+			scene_path = "res://scenes/levels/combat_test.tscn"
 	if OS.get_cmdline_user_args().has("--gameplay"):
 		scene_path = "res://scenes/levels/gameplay_test.tscn"
 	if OS.get_cmdline_user_args().has("--movement"):

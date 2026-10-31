@@ -30,4 +30,7 @@ for ticks in 30 60 120; do
     --script res://tests/test_combat_room.gd -- "--ticks=$ticks"
   run_check "combat-victory-$ticks" --headless --fixed-fps "$ticks" \
     --script res://tests/test_combat_victory.gd -- "--ticks=$ticks"
+  run_check "adventure-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_adventure.gd -- "--ticks=$ticks"
 done
+run_check full-level --headless --fixed-fps 60 --script res://tests/test_full_level.gd

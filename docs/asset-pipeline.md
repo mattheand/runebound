@@ -1,10 +1,12 @@
-# Asset pipeline — through M3 and Art Handoff v1 intake
+# Asset pipeline — M4 and both art handoffs
 
 ## Source direction
 
 Read `design/RUNEBOUND_Visual_References/ART_DIRECTION.md` and its `contact_sheet.webp` before replacing visuals. The art-direction file was supplied inside that folder, rather than directly in `docs/design/` as referenced by `AGENTS.md`.
 
 The additional handoff now also supplies `design/ART_DIRECTION.md`, `design/hero_reference_approved.png`, the canonical concept files and `handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`. Its extracted prototype assets and manifests are available under `assets/` and `asset_manifest.json`. See `handoff/ART_HANDOFF_INTEGRATION.md` for exact placement, provenance and import validation. The original reference directory remains intact.
+
+Art Handoff 2 supplies enemy source animation sheets and reference sheets for the Draugr, Raven and Bridge Troll. Both full/compact archives and original PNGs are preserved. See `handoff/ART_HANDOFF_2_INTAKE.md` for placement/hashes and `handoff/ART_HANDOFF_2_INTEGRATION.md` for required segmentation, alignment, normalization and timing. Its manifests are stored separately under `docs/handoff/` so the first root manifest remains intact.
 
 The supplied four concept images and contact sheet remain intact. No HTML/JavaScript prototype or production sprite sheets were present in the initial workspace.
 
@@ -24,6 +26,8 @@ All current gameplay visuals are original programmatic placeholders:
 | Short SFX | `scripts/components/sound_cue.gd` | Original 22,050 Hz, 16-bit mono generated cues |
 | Draugr / Raven / Troll | `scenes/enemies/enemy_visual.gd` | Separate temporary silhouettes; profile rectangles visualize actual attack regions |
 | Combat-room bridge | `scenes/levels/combat_floor.gd` | 16px planks over independent TileMapLayer collision |
+| M4 cabin / church / pine / waterfall / decks | `scenes/levels/adventure_landmark.gd` | Collision-free provisional landmarks |
+| M4 cave backdrop | `scenes/levels/adventure_backdrop.gd` | Fixed 640×360 provisional cave palette/silhouettes |
 
 Hero identity: blond `#e9be62`, blue tunic `#367ea8`, red cape `#d44a4f`, brown leather and a small shield. Terrain uses dark slate `#263b44` / `#3d5055` and moss `#648850` / `#a4b56a`. Pale mountain silhouettes contrast with solid playable surfaces. Air-jump feedback uses cyan.
 
@@ -32,6 +36,8 @@ Godot's default UI font and engine-generated web icons are used. Hearts are geom
 Production visual assets are being developed separately. Keep these implementations as functional placeholders until those assets are ready; preserve component signal interfaces and sword hit timing when swapping presentation.
 
 The imported handoff is also provisional. The current M3 enemies and active player/background presentation still use temporary draws. No final-quality claim follows from import. During M5, produce actual Godot screenshots and a recording, compare side by side to approved concepts using all ten criteria in `specs.md`, fix significant differences and obtain human visual acceptance. Animation art must respect existing attack timing; parallax layers require seam verification before repeating.
+
+Handoff 2's source poses are **not equal-grid atlases**. The 48×48/96×96 canvas sizes and frame counts are targets, not verified slicing instructions. The source directories `assets/characters/enemies/` and `assets/enemies/` carry `.gdignore` markers so original sheets stay out of automatic runtime imports/exports. Future validated derivatives should go in a runtime-visible directory, with source files preserved and documented. No frame processing or scene replacement was performed during M4 intake, and M3 combat timings were not changed.
 
 ## Replacing placeholders later
 

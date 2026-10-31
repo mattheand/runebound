@@ -1,0 +1,29 @@
+[gd_scene load_steps=5 format=3]
+[ext_resource type="Script" path="res://scenes/interactables/breakable_stone.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="3"]
+[sub_resource type="RectangleShape2D" id="Stone"]
+size = Vector2(32, 64)
+
+[node name="BreakableStone" type="StaticBody2D"]
+script = ExtResource("1")
+collision_layer = 1
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -32)
+shape = SubResource("Stone")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2")
+max_health = 2
+invulnerability_seconds = 0.0
+
+[node name="Hurtbox" type="Area2D" parent="."]
+position = Vector2(0, -32)
+collision_layer = 4
+collision_mask = 0
+monitoring = false
+script = ExtResource("3")
+
+[node name="Shape" type="CollisionShape2D" parent="Hurtbox"]
+shape = SubResource("Stone")

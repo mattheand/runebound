@@ -22,6 +22,7 @@ const assert = require('node:assert/strict');
     fs.mkdirSync('build/screenshots', { recursive: true });
     await page.goto(process.env.GAME_URL || 'http://127.0.0.1:8765', { waitUntil: 'networkidle' });
     await page.locator('#status').waitFor({ state: 'detached' });
+    await page.keyboard.press('ArrowDown'); // M3 remains available after M4.
     await page.keyboard.press('Enter');
     await page.waitForTimeout(900);
     await page.keyboard.down('d');

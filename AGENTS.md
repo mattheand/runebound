@@ -17,4 +17,4 @@ Read `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md` and inspect the 
 
 ## Immediate priority
 
-M0–M2 are approved; M2 has been merged into main and revalidated. M3 is implemented and verified, awaiting user review; read `docs/HANDOFF.md`. Preserve prior functionality and tests. Use temporary artwork; the extracted Art Handoff v1 is provisional. Do not start M4 or M5 until M3 is reviewed and accepted. Future M5 work must meet `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md` and the visual gate in `specs.md`, with actual runtime comparisons and human acceptance.
+M0–M3 are approved and merged. M4 is implemented and verified, awaiting user level-flow/pacing acceptance; read `docs/HANDOFF.md`. Preserve the 1,087-assertion suite and both input-driven completion routes. Keep provisional presentation; both art handoffs are preserved, and handoff 2 needs frame separation/alignment before use. Do not begin M5 until M4 is tested and approved. The existing ten-criterion M5 visual gate and human acceptance remain mandatory.

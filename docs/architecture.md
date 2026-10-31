@@ -1,10 +1,10 @@
-# RUNEBOUND architecture — through M3
+# RUNEBOUND architecture — through M4
 
 ## Scene flow
 
-`main.tscn` → Combat trials (M3) → `combat_test.tscn` → Escape → `main.tscn`.
+`main.tscn` → The Troll Bridge (M4) → `troll_bridge.tscn` → completion or pause menu → replay/menu.
 
-The separate Gameplay training and Movement playground buttons load `gameplay_test.tscn` and `movement_test.tscn`.
+The separate M3, M2 and M1 buttons load `combat_test.tscn`, `gameplay_test.tscn` and `movement_test.tscn`. Earlier trial controls remain intact.
 
 There are no autoloads. Scene ownership handles cleanup. The M1 playground owns its simple restart/fall reset; the M2 course owns delayed death respawn and training-prop resets. The player owns movement and damage reactions. Session progress is a level-local node, preserved through M2 respawns and recreated on a fresh session.
 
@@ -89,3 +89,28 @@ The Troll's real Area2D trigger begins its intro. Charged smash removes a two-ti
 ## Art handoff / future M5
 
 The provisional sprite strips and background layers are imported under `assets/` but do not replace M3 presentation. `asset_manifest.json` and the hero manifest define dimensions, frames and anchor contracts. Producer scripts are preserved as provenance, not executed. Concept references stay outside runtime imports/exports. M5 acceptance is defined in `specs.md` and `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`; package import is not visual acceptance.
+
+The second handoff's original enemy sheets are deliberately outside automatic import/export via `.gdignore` in their source directories. Its supplied manifests are under `docs/handoff/`, preserving the first root manifest. Future validated derivatives should use a runtime-visible directory while originals remain preserved; timings and AI stay authoritative.
+
+## M4 authored level and progression
+
+`troll_bridge_layout.gd` contains a fixed sequence of 38 reusable 1,024px terrain beats, followed by a 640px arena and exit stretch; total world width is 39,936 logical pixels. This is authored content assembly, not random generation. Beat types cover safe trails, rising steps, gaps, double-jump high routes, hopping shelves, low ceilings and wooden decks. Rune/checkpoint/enemy placements are explicit data. The optional 3,072px cave occupies a lower route in the same scene.
+
+`troll_bridge.gd` assembles that content and owns camera context, travel, checkpoint retries, boss gates/bridge and completion. Existing player, enemy, health, sword, rune and checkpoint scenes are instantiated directly. Ordinary enemies retain their M3 tuning. The Troll gets an instance-local tuning copy with translated arena bounds, preserving its timing/health profiles.
+
+`AdventureProgress` extends `LevelProgress` with cave entrance/switch flags, checkpoint cave context, boss defeat, death count, elapsed time and idempotent completion. Any five registered runes open the bridge gate; there are five main-route runes and two optional cave runes. Progress survives retries and is recreated only for a fresh adventure.
+
+### Interactions and retry semantics
+
+- `BreakableStone` reuses HealthComponent/HurtboxComponent; two normal sword hits disable its collision and announce the open entrance.
+- `InteractZone` checks living-player overlap and fresh E input, then emits an action ID. Cave passages relocate the player within the same scene without healing or altering rune state; travel clears momentum/current sword activity and updates the camera context.
+- `RuneGate` has a visible 320px blocking height matching its collider. The cave switch opens its vault gate; the five-rune gate opens the bridge; the boss locks the arena back gate and controls the final exit.
+- New checkpoint activation restores hearts and stores surface/cave context. Death/R resets ordinary enemies, repairs the boss bridge, restores player state and resets an undefeated boss. Collected runes, opened cave mechanisms and a defeated boss persist.
+- Surface death threshold is y=720, above the cave roof at y=784, preventing surface falls from becoming stranded on the lower route's roof. Cave death threshold is y=1280. These are world-layout rules, not changed player physics.
+- Intro switches to translated M3-style fixed arena camera bounds. The charged smash removes the full depth of the affected bridge columns; retry repairs them. Defeat reopens boundaries/exit and plays brief victory feedback. Interacting with the unlocked exit completes the level.
+
+### Adventure UI and pause
+
+`AdventureHUD` binds health, runes, checkpoint and boss health signals; it shows section/objective text and interaction feedback. Its pause controls process while the SceneTree is paused. Pausing freezes enemies, movement and the level timer. Resume preserves the session; checkpoint retry/menu callbacks clear pause before acting.
+
+Completion stops player/combat input, freezes elapsed time and displays rune count, deaths and time. Replay reloads a fresh adventure; menu return preserves the existing main-menu scene flow. The provisional backdrop switches to a dark cave palette, while collision-free cabin/pine/waterfall/church/bridge landmarks communicate the five sections.
