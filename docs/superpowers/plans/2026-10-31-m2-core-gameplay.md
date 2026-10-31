@@ -52,7 +52,7 @@ Files: `scripts/components/level_progress.gd`, `scenes/interactables/checkpoint.
 - [x] Run import/startup, both Godot suites plus a full input-driven route at 30/60/120 Hz, export and Chrome smoke checks.
 - [x] Request read-only review, address real findings and rerun affected checks.
 - [x] Update README, architecture, testing, roadmap and `docs/HANDOFF.md` with details, commands and outstanding compatibility checks.
-- [ ] Commit verified M2 source; publish the feature branch to the personal repository for coordination.
+- [x] Commit verified M2 source; publish the feature branch to the personal repository for coordination (implementation `598b273`, `feat/m2-core-gameplay`).
 
 ## Verification outcome
 

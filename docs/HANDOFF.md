@@ -5,7 +5,7 @@
 - **M0 and M1: complete and explicitly user-approved**, including the current movement implementation.
 - **M2: implemented, playable and verified.** All five requested core systems are present.
 - **M3/M4: not started.** Training targets are stationary damage fixtures, not enemy AI. Production art is being developed separately; current presentation remains temporary.
-- Work branch: `feat/m2-core-gameplay`, based on M0/M1 commit `819069c` in `mattheand/runebound`.
+- Published work branch: `feat/m2-core-gameplay` in `mattheand/runebound`. M2 implementation commit: **`598b273`**, based on M0/M1 commit `819069c`. The feature branch is ready for coordinator review/integration; `main` retains the accepted M0/M1 version.
 
 The source of truth remains `specs.md`. The supplied art direction lives at `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md`.
 
