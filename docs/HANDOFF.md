@@ -3,7 +3,7 @@
 ## Status and source control
 
 - **M0–M2 approved.** As requested, `feat/m2-core-gameplay` was fast-forward merged into `main` at **`856a666`**. The existing **360 assertions passed on merged main**, then main was pushed to `mattheand/runebound`.
-- **M3 implemented, playable and verified; awaiting user hands-on review/acceptance.** Work branch: `feat/m3-enemies-boss`.
+- **M3 implemented, playable and verified; awaiting user hands-on review/acceptance.** Published branch: `feat/m3-enemies-boss`; implementation commit **`7879e33`**. Main remains at the accepted M2 merge until M3 is accepted.
 - **M4/M5 have not started.** Current art remains temporary. The additional art package was extracted/imported and its M5 gate documented during M3, without replacing accepted gameplay presentation.
 - Art intake commit: **`e95e5fb`**. Source package, extracted assets, metadata, producer scripts and gate documentation are preserved.
 

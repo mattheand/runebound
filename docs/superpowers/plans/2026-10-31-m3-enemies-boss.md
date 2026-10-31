@@ -43,7 +43,7 @@
 - [x] Add actual input-driven enemy defeats and a standard-ability boss victory test.
 - [x] Rerun M0–M2 and new suites, validate export and rendered Chrome/native gameplay, request read-only review.
 - [x] Update README/architecture/testing/roadmap and `docs/HANDOFF.md`. Stop before M4/M5.
-- [ ] Commit/publish M3 branch for user review.
+- [x] Commit/publish M3 branch for user review (`7879e33`, `feat/m3-enemies-boss`; art intake `e95e5fb`).
 
 ## Outcome
 
