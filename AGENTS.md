@@ -17,4 +17,4 @@ Read `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md` and inspect the 
 
 ## Immediate priority
 
-M0 and M1 are complete and user-approved. M2 is implemented and verified; read `docs/HANDOFF.md` for its components and tests. Address M2 feedback using temporary artwork; production assets are being developed separately. Do not start M3 or M4 without further direction. Preserve the movement playground and document outstanding browser/controller compatibility checks.
+M0–M2 are approved; M2 has been merged into main and revalidated. M3 is implemented and verified, awaiting user review; read `docs/HANDOFF.md`. Preserve prior functionality and tests. Use temporary artwork; the extracted Art Handoff v1 is provisional. Do not start M4 or M5 until M3 is reviewed and accepted. Future M5 work must meet `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md` and the visual gate in `specs.md`, with actual runtime comparisons and human acceptance.

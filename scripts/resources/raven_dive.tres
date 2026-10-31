@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyAttackProfile" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/enemy_attack_profile.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+attack_name = &"dive"
+windup = 0.55
+active = 0.75
+recovery = 0.65
+size = Vector2(30, 24)
+offset = Vector2(0, 0)
+knockback = Vector2(170, -140)

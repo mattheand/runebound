@@ -21,4 +21,12 @@ for ticks in 30 60 120; do
     --script res://tests/test_gameplay.gd -- "--ticks=$ticks"
   run_check "traversal-$ticks" --headless --fixed-fps "$ticks" \
     --script res://tests/test_traversal.gd -- "--ticks=$ticks"
+  run_check "enemies-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_enemies.gd -- "--ticks=$ticks"
+  run_check "boss-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_boss.gd -- "--ticks=$ticks"
+  run_check "combat-room-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_combat_room.gd -- "--ticks=$ticks"
+  run_check "combat-victory-$ticks" --headless --fixed-fps "$ticks" \
+    --script res://tests/test_combat_victory.gd -- "--ticks=$ticks"
 done

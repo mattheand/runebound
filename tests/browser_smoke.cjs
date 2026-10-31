@@ -23,6 +23,7 @@ const assert = require('node:assert/strict');
     await page.goto(process.env.GAME_URL || 'http://127.0.0.1:8765', { waitUntil: 'networkidle' });
     await page.locator('#status').waitFor({ state: 'detached' });
     await page.screenshot({ path: 'build/screenshots/browser-menu.png' });
+    await page.keyboard.press('ArrowDown'); // Keep exercising the M2 entry.
     await page.keyboard.press('Enter');
     await page.waitForTimeout(1200);
     const start = await page.screenshot({ path: 'build/screenshots/browser-gameplay.png' });

@@ -4,20 +4,26 @@ extends Control
 func _ready() -> void:
 	var column := VBoxContainer.new()
 	column.set_anchors_and_offsets_preset(Control.PRESET_CENTER)
-	column.position = Vector2(-170, -140)
-	column.size = Vector2(340, 280)
-	column.add_theme_constant_override("separation", 12)
+	column.position = Vector2(-170, -157)
+	column.size = Vector2(340, 314)
+	column.add_theme_constant_override("separation", 8)
 	add_child(column)
 	_add_label(column, "R U N E B O U N D", 30, Color("e9d8a6"))
 	_add_label(column, "THE NINE REALMS", 14, Color("72c7d0"))
-	_add_label(column, "M2  •  Core gameplay training", 14, Color("bbced6"))
+	_add_label(column, "M3  •  Enemies & boss combat trials", 14, Color("bbced6"))
+	var combat := Button.new()
+	combat.name = "StartCombat"
+	combat.text = "Combat trials (M3)"
+	combat.custom_minimum_size.y = 34
+	combat.pressed.connect(func() -> void: get_tree().change_scene_to_file("res://scenes/levels/combat_test.tscn"))
+	column.add_child(combat)
+	combat.grab_focus()
 	var start := Button.new()
 	start.name = "StartGameplay"
-	start.text = "Start gameplay"
-	start.custom_minimum_size.y = 38
+	start.text = "Gameplay training (M2)"
+	start.custom_minimum_size.y = 32
 	start.pressed.connect(_start)
 	column.add_child(start)
-	start.grab_focus()
 	var movement := Button.new()
 	movement.name = "MovementButton"
 	movement.text = "Movement playground (M1)"

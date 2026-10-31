@@ -1,82 +1,32 @@
-# Coordinator handoff — M2 Core Gameplay Systems
+# Coordinator handoff — M3 Enemies and Boss
 
-## Status
+## Status and source control
 
-- **M0 and M1: complete and explicitly user-approved**, including the current movement implementation.
-- **M2: implemented, playable and verified.** All five requested core systems are present.
-- **M3/M4: not started.** Training targets are stationary damage fixtures, not enemy AI. Production art is being developed separately; current presentation remains temporary.
-- Published work branch: `feat/m2-core-gameplay` in `mattheand/runebound`. M2 implementation commit: **`598b273`**, based on M0/M1 commit `819069c`. The feature branch is ready for coordinator review/integration; `main` retains the accepted M0/M1 version.
+- **M0–M2 approved.** As requested, `feat/m2-core-gameplay` was fast-forward merged into `main` at **`856a666`**. The existing **360 assertions passed on merged main**, then main was pushed to `mattheand/runebound`.
+- **M3 implemented, playable and verified; awaiting user hands-on review/acceptance.** Work branch: `feat/m3-enemies-boss`.
+- **M4/M5 have not started.** Current art remains temporary. The additional art package was extracted/imported and its M5 gate documented during M3, without replacing accepted gameplay presentation.
+- Art intake commit: **`e95e5fb`**. Source package, extracted assets, metadata, producer scripts and gate documentation are preserved.
 
-The source of truth remains `specs.md`. The supplied art direction lives at `docs/design/RUNEBOUND_Visual_References/ART_DIRECTION.md`.
-
-## M2 implementation
-
-### Health and player lifecycle
-
-`scripts/components/health_component.gd` is reusable and actor-independent. It starts with three hearts by default and exposes:
-
-- `take_damage(amount: int, impulse: Vector2 = Vector2.ZERO) -> bool`: accepts a hit only while alive and vulnerable; clamps health at zero.
-- `heal(amount: int)`: clamps to maximum, rejects nonpositive amounts and does not revive dead actors.
-- `kill()`: one-shot death, bypassing invulnerability for falls/kill planes.
-- `reset_health(grace_seconds: float = 0.0)`: explicit revive/restore.
-- Signals: `health_changed(current, maximum)`, `damaged(amount, impulse)`, `died`.
-
-The player applies damage knockback and a 180 ms steering/jump stun, cancels combat and clears buffered jump state. Default damage invulnerability is 800 ms. Death freezes input/motion and plays brief rotation/fade feedback. Respawn restores all three hearts with 800 ms grace and clears movement, jump, stun, attack and visual death state.
-
-### Sword combat
-
-`scenes/player/sword_combat.*` uses a single physics clock for temporary slash presentation and hitbox activity. `scripts/resources/combat_tuning.gd` defaults to **80 ms wind-up / 100 ms active / 220 ms recovery**, one damage and directional knockback.
-
-`HitboxComponent` queries `HurtboxComponent` Areas on layer 4. Team IDs exclude self/friendly hits. Each swing records **health-owner IDs**, preventing repeated damage from sustained overlaps or multiple hurtboxes on one target. Facing locks at swing start. Holding J does not auto-repeat; wind-up/recovery cannot deal damage, and hurt/death/reset cancel the attack.
-
-Stationary training dummies demonstrate health, knockback, hit flash, defeat and reset. Spike Areas demonstrate repeated contact damage gated by player invulnerability. Slash/impact flashes, hurt flicker, death feedback and short original synthesized SFX provide temporary feedback.
-
-### Checkpoints and respawning
-
-Reusable checkpoint Areas activate on contact with a living player and show an activation pulse/active marker. `LevelProgress` stores the latest checkpoint ID and global spawn point. The level waits **650 ms** after death, then restores the player there. Falling follows the same lifecycle; **R** returns immediately to the latest checkpoint.
-
-Respawning resets training targets and player state while preserving the active checkpoint and collected runes. Safe spawn offsets keep checkpoint returns clear of hazards. No asynchronous scene callback survives a menu transition.
-
-### Rune collection and HUD
-
-`scenes/collectibles/rune.*` provides floating/glowing pickups with explicit IDs, bound to the level-local `LevelProgress` node. Only registered, uncollected IDs increment the counter. Duplicate IDs cannot inflate totals; duplicate instances of a collected ID remain hidden. Collection persists through death and R. Starting a new session from the menu recreates progress.
-
-`scenes/ui/gameplay_hud.gd` subscribes to health/progress signals, showing hearts plus numeric health, runes, active checkpoint and short status messages. Heart icons are drawn polygons, so Web rendering does not depend on OS fallback fonts.
-
-### Playable area
-
-`scenes/levels/gameplay_test.tscn` is a 1,920-pixel training course containing **five runes, two checkpoints, two dummies, two spike patches, a gap and raised platforms**. The menu opens this scene by default and retains the approved M1 movement playground as a separate option.
-
-## Verified evidence
-
-`bash tools/check.sh` imports the project, checks main-scene startup and runs:
-
-| Suite | Checks at each rate | Rates |
-|---|---:|---|
-| Movement regression (`tests/run_tests.gd`) | 36 | 30 / 60 / 120 Hz |
-| M2 systems/lifecycle (`tests/test_gameplay.gd`) | 62 | 30 / 60 / 120 Hz |
-| Full M2 route (`tests/test_traversal.gd`) | 22 | 30 / 60 / 120 Hz |
-
-**360 passing assertions; zero failures, engine errors or warnings in the final run.** Tests use actual Godot input, scene instances and collisions.
-
-The complete route uses input actions only—no teleports, hazard disabling or health cheats—to collect all five runes and reach both checkpoints with three hearts intact. The systems suite additionally verifies damage/death, sword timing/deduplication, real pickup/checkpoint overlaps, HUD updates, respawn persistence and fresh-session reset.
-
-Native macOS rendering was captured and inspected. The single-threaded Web export builds successfully and passes the Chrome smoke test with no runtime/resource/HTTP errors. Inspected browser captures show sword damage, 2/3 hearts after spikes, restored 3/3 health and a persistent 1/5 rune count after R. Missing Unicode heart glyphs discovered during Web inspection were fixed using drawn icons.
-
-Read-only review found no actionable M2 functional issues and independently ran the 62-check systems suite at 60 Hz. Final HUD/traversal changes were subsequently validated in the complete suite and browser checks.
-
-## Play / reproduce
+## Play M3
 
 ```bash
-bash tools/godot.sh                 # Play; select Start gameplay
-bash tools/godot.sh --editor        # Edit
-bash tools/check.sh                 # Full validation
-bash tools/godot.sh --script tools/capture_preview.gd
+bash tools/godot.sh
 ```
 
-Controls: **A/D or arrows** move; **Space** jump/double-jump; **J** sword; **R** return to checkpoint; **Escape** menu. Gamepad mappings: stick/D-pad, A, X, LB, Start respectively.
+Choose **Combat trials (M3)** or press Enter. **Gameplay training (M2)** and **Movement playground (M1)** retain the previous scenes.
 
-Browser preview: **http://localhost:8765** while the local server runs. Regenerate/serve with:
+| Action | Input |
+|---|---|
+| Move | A/D or arrows; gamepad stick/D-pad |
+| Jump / double-jump | Space; gamepad A |
+| Sword | J; gamepad X |
+| Select Draugr / Raven / Troll | 1 / 2 / 3, or click the three buttons |
+| Retry selected encounter | R; gamepad LB |
+| Return to menu | Escape; gamepad Start |
+
+For the Troll, walk past the yellow banner to start its introduction. Amber rectangles indicate the exact warned attack region; red indicates active damage. The Raven aim line is locked at warning start. Jump low attacks, retreat or cross behind directional swings, and use recovery windows to attack. The charged smash can break the marked bridge patch. Defeating the Troll unlocks the exit and triggers combat-trial completion.
+
+**Browser:** refresh **http://localhost:8765** while the local preview server runs. To regenerate/serve:
 
 ```bash
 mkdir -p build/web
@@ -84,17 +34,102 @@ bash tools/godot.sh --headless --editor --export-release Web build/web/index.htm
 python3.13 -m http.server 8765 --bind 127.0.0.1 --directory build/web
 ```
 
-Godot **4.7.2 stable** is installed locally at `~/Applications/Godot.app` with matching single-threaded Web export templates. Launcher also supports PATH or `GODOT`. On other machines, use an installed Python 3 executable for serving.
+Godot 4.7.2 stable is installed at `~/Applications/Godot.app`; the launcher also accepts PATH or `GODOT`. Use another installed Python 3 executable when appropriate. The Web preset is single-threaded Compatibility/WebGL 2.
 
-Builds: `build/web/`. Captures: `build/screenshots/`, including `browser-m2-sword.png`, `browser-m2-damage.png`, `browser-m2-respawn.png` and `native-gameplay.png`. Test logs: `build/test-results/`. These outputs are regenerable and excluded from Git.
+## Implemented systems
 
-## Remaining checks and next direction
+### Shared enemy foundation
 
-- **Outstanding compatibility:** physical gamepads, Firefox/Safari, Windows/Linux, additional window sizes and sustained performance profiling. Native macOS and Chrome WebGL 2 have been checked.
-- **M2 hands-on follow-up:** sword feel, hurt/respawn pacing and temporary sound balance. Automated tests do not claim subjective audio quality.
-- Rune/checkpoint progress is session-local, not saved to disk; this matches M2 scope.
+`scenes/enemies/enemy_actor.gd` handles home/target state, living-target validation, world-layer line-of-sight/ground probes, hurt/knockback, death/reset and `state_changed(previous, current)` / `defeated(actor)` signals. Enemy bodies use world collision and existing team-2 hurtboxes. The accepted player controller and M2 damage rules remain unchanged.
+
+`scripts/components/enemy_attack.gd` uses exported `EnemyAttackProfile` resources for wind-up/active/recovery timing, geometry, damage and knockback. `start(profile, facing)`, `cancel()`, `begin_recovery()` and phase/active/finished signals let each controller own movement independently. Facing locks at attack start; the existing hitbox records health-owner IDs, preventing repeated or multi-hurtbox damage within an attack. Dead enemies cancel all damage immediately.
+
+### Draugr
+
+`scenes/enemies/draugr.*`, `scripts/resources/draugr_tuning.gd`:
+
+- Three health; idle/patrol/chase/attack/hurt/dead state machine.
+- Patrol stays within home bounds and reverses at walls or unsupported ledges.
+- Nearby living players are detected through clear sight; a larger forget radius prevents range-edge flicker while chasing.
+- Interruptible melee with **350 ms warning / 120 ms active / 650 ms recovery** by default.
+- Player hits apply knockback/hurt interruption; death freezes movement, disables collisions/hurtbox and fades the placeholder.
+
+### Raven
+
+`scenes/enemies/raven.*`, `raven_tuning.gd`, `raven_dive.tres`:
+
+- Two health; patrol/telegraph/dive/recovery/return/hurt/dead states.
+- Patrols a bounded flight route. Detection captures a fixed aim point/vector, shown before the dive; it does not home on subsequent player movement.
+- **550 ms warning / up to 750 ms active dive / 650 ms recovery**. World impact or passing the aim point ends active damage early.
+- At most one hit per dive, followed by return to the original patrol altitude/route. Hurt/death cancel attack activity.
+
+### Bridge Troll
+
+`scenes/bosses/bridge_troll.*`, `troll_tuning.gd`, three `troll_*.tres` profiles:
+
+- Twelve health; dormant → 1.2-second introduction → bounded approach/attacks → defeat.
+- `start_encounter() -> bool` is idempotent. Dormant/intro protection prevents damage or attacks before introduction completes.
+- A visible health bar responds to health/state signals. Combat hits produce feedback without normal-enemy knockback/stun-lock.
+- Predictable repeating attack order:
+
+| Attack | Wind-up | Active | Recovery | Counterplay |
+|---|---:|---:|---:|---|
+| Ground slam | 0.80 s | 0.12 s | 1.00 s | Jump the low two-sided impact region |
+| Club swing | 0.65 s | 0.16 s | 1.10 s | Back off, cross behind or jump above the sweep |
+| Charged smash | 1.10 s | 0.15 s | 1.35 s | Leave/jump the marked front region; watch bridge damage |
+
+Charged smash emits `bridge_smashed(at)` on its active frame. The room removes a **32-pixel-wide bridge collision patch** only when the attack reaches it; repeat smashes do not expand destruction. Retry restores those tiles.
+
+### Combat room / lifecycle
+
+`scenes/levels/combat_test.*` is a bounded test room, not the M4 Troll Bridge level. One selected enemy is active at a time. R or player death reconstructs the current opponent and restores player health, bridge, intro, boss bar and victory/exit state. A brief enemy death sequence leads to trial completion; Troll defeat unlocks the exit. `CombatHUD` shows hearts, opponent health/state/phase, selector buttons and boss bar.
+
+## Test evidence
+
+```bash
+bash tools/check.sh
+```
+
+| Suite | Checks per run | Runs |
+|---|---:|---|
+| Movement regression | 36 | 30/60/120 Hz |
+| M2 systems/lifecycle | 62 | 30/60/120 Hz |
+| Full M2 input-driven route | 22 | 30/60/120 Hz |
+| Draugr/Raven states and damage | 34 | 30/60/120 Hz |
+| Troll mechanics/patterns | 38 | 30/60/120 Hz |
+| M3 selection/intro/bridge/retry/completion | 17 | 30/60/120 Hz |
+| Input-only combat victories | 10 | 30/60/120 Hz |
+| Provisional art import contracts | 43 | Once |
+
+**700 passing assertions**, zero failures. Project import/startup and suite logs have no engine/script errors or warnings. Tests use real Godot scenes, input and collisions. The winning test fighter defeats **all three enemies with 3/3 hearts and no retries** at all three rates, using unchanged player health, movement, jump and sword rules. It does not teleport, apply damage directly or grant abilities. The Troll is demonstrably beatable with standard abilities; human difficulty/balance review remains pending.
+
+Read-only code review found no actionable M3 functional issues and independently passed the 99 M3 checks at 60 Hz. Render inspection identified and corrected a boss-bar theme sizing overlap; its visibility is signal-driven from the actual intro/death state.
+
+Native macOS (Apple M4 Max) rendering and Chrome **156.0.8078.79**, WebGL 2, were checked. Both `tests/browser_combat.cjs` (M3) and `tests/browser_smoke.cjs` (M2 regression) passed with no runtime/resource/HTTP errors. Browser captures demonstrate a hurt Draugr, the Raven warning, Troll intro/damage/slam, retry and the three-entry menu.
+
+## Runtime captures and recording
+
+```bash
+bash tools/godot.sh --script tools/capture_preview.gd -- --opponent=troll
+bash tools/godot.sh --write-movie build/m3-troll-victory.avi --fixed-fps 60 --script tools/capture_combat_victory.gd
+```
+
+The native input-only victory recording contains **573 frames at 60 FPS (~9.6 seconds)**, with a standard three-heart win, completed trial and unlocked exit. Screenshot: `build/screenshots/native-m3-victory.png`. Browser captures: `build/screenshots/browser-m3-*.png`. Logs: `build/test-results/m3-all.log` and per-suite files. Builds/recordings/captures are regenerable and ignored by Git. Capture speed is not a sustained-FPS benchmark.
+
+## Art handoff and deferred M5 gate
+
+The supplied `RUNEBOUND_Art_Handoff_v1.zip` was inspected and extracted without replacing existing implementation files. Its README is preserved at `docs/handoff/ART_HANDOFF_V1_README.md`; intake mapping, SHA-256, validation and integration caveats are in `docs/handoff/ART_HANDOFF_INTEGRATION.md`.
+
+The provisional hero strips, terrain, rune/checkpoint sprites and independent backdrop layers are imported under `assets/`, with `asset_manifest.json` and hero animation metadata. The producer scripts are provenance snapshots, not executed. The hero's feet reference is `[16,46]`; the first-pass 600 ms attack strip must eventually be adapted to the accepted 400 ms sword clock rather than changing combat. Layers are not guaranteed seamless. These imported assets do not claim final illustrated quality and have not been wired over active gameplay presentation during M3.
+
+The authoritative **ten-criterion M5 visual gate** is now in `specs.md` and `docs/roadmap.md`, linked to `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`. It requires approved hero identity/expressive animation, consistent pixels/palette, rich Norwegian scenery, layered parallax, readable interactions, atmosphere, provenance, actual runtime screenshots/recording and side-by-side comparisons, resolved significant gaps and passing gameplay regressions. Completion requires human visual acceptance; unresolved gaps mean **NEEDS ART ITERATION**, not an invented fidelity percentage.
+
+## Outstanding checks / next action
+
+- **Await M3 hands-on review:** difficulty, telegraph readability, Raven counterplay, boss recovery/pacing and temporary sound balance.
+- **Compatibility still untested:** physical gamepads, Firefox/Safari, Windows/Linux, additional window sizes and sustained performance profiling.
+- Prior rune/checkpoint persistence remains session-local as defined in M2.
 - No known critical or progression-blocking issue remains in the verified scope.
-- Keep temporary artwork until separately produced assets arrive. Swap presentation using the existing signals and sword timing contract.
-- **Await M2 feedback. Do not begin M3 or M4 without further direction.**
+- **Do not start M4 or M5 until M3 is reviewed and accepted.** Keep the build playable and preserve accepted mechanics during any follow-up or later art integration.
 
-See `README.md`, `docs/architecture.md`, `docs/testing.md`, `docs/asset-pipeline.md` and `docs/roadmap.md` for additional detail.
+Further detail: `README.md`, `docs/architecture.md`, `docs/testing.md`, `docs/asset-pipeline.md`, `docs/roadmap.md`.

@@ -1,10 +1,10 @@
-# RUNEBOUND architecture — through M2
+# RUNEBOUND architecture — through M3
 
 ## Scene flow
 
-`main.tscn` → Start gameplay → `gameplay_test.tscn` → Escape → `main.tscn`.
+`main.tscn` → Combat trials (M3) → `combat_test.tscn` → Escape → `main.tscn`.
 
-The separate Movement playground button loads `movement_test.tscn`.
+The separate Gameplay training and Movement playground buttons load `gameplay_test.tscn` and `movement_test.tscn`.
 
 There are no autoloads. Scene ownership handles cleanup. The M1 playground owns its simple restart/fall reset; the M2 course owns delayed death respawn and training-prop resets. The player owns movement and damage reactions. Session progress is a level-local node, preserved through M2 respawns and recreated on a fresh session.
 
@@ -59,3 +59,33 @@ Each rune scene has an explicit stable ID and is bound to the level's progress n
 `GameplayHUD` subscribes to health/progress signals and initializes itself from their current values. Hearts are drawn in `heart_display.gd` rather than relying on OS fallback font glyphs. The numeric health label and rune counter match the same source state. The HUD also shows the active checkpoint and short event messages.
 
 Temporary sounds use AudioStreamPlayer nodes with short original WAV cues synthesized once in `_ready`. No external audio assets are required. Production presentation can replace the visual/sound nodes while preserving component signals and the shared sword timing contract.
+
+## M3 enemy composition and state machines
+
+`scenes/enemies/enemy_actor.gd` is a small CharacterBody2D base for shared sensing/lifecycle. It owns `state`, `state_time`, `target`, `home`, hurt flash, `state_changed(previous, current)` and one-shot `defeated(actor)` signals. It reuses HealthComponent, HurtboxComponent and enemy-team HitboxComponent. World-layer ray queries validate line of sight and ground support. Hurt cancels attacks and applies knockback for ordinary enemies; death cancels damage, disables collision/monitorability, freezes movement and fades the placeholder. `reset_enemy()` restores the home position and health.
+
+`scripts/components/enemy_attack.gd` owns wind-up/active/recovery timing from `EnemyAttackProfile`. It exposes `start(profile, facing)`, `cancel()`, `begin_recovery()`, `is_running()` and phase/active/finished signals. Damage remains disabled during wind-up and recovery. A swing locks facing and deduplicates hits through the existing health-owner identity system. The exact profile rectangle is used for both collision and temporary warning overlays.
+
+### Draugr
+
+States: idle → patrol / chase → attack; hurt and dead override them. Configurable patrol bounds, speed, sight/forget radii and melee range live in `draugr_tuning.gd`; melee timings use an exported attack profile. Patrol reverses at bounds, walls and unsupported ledges. Detection requires a living player and clear world-layer sight. Melee is interrupted by hurt/death; recovery returns to idle before the next decision.
+
+### Raven
+
+States: patrol → telegraph → dive → recovery → return → patrol; hurt/dead interrupt. `raven_tuning.gd` holds speeds/radii and `raven_dive.tres` the phase timing/hit region. The player position and dive vector are captured at warning start, shown as an aim line and never homed during the dive. Reaching/passing that aim or colliding with the world ends active damage early. Recovery and return restore the home route/altitude before another dive.
+
+### Bridge Troll
+
+States: dormant → intro → chase → attack → chase; dead ends the encounter. `start_encounter() -> bool` is idempotent and required before combat. Health/hurtbox protection lasts through the intro; the boss is vulnerable in combat. Damage flashes without normal-enemy stagger to avoid player-driven stun-lock.
+
+The boss approaches within configured arena bounds and cycles deterministically through ground slam, club swing and charged smash, using the three `troll_*.tres` profiles. Each has an independent telegraph and generous recovery. The slam is a low, two-sided region; club/smash face the target at wind-up start. `bridge_smashed(at)` fires only when charged smash becomes active.
+
+### Combat-test room
+
+`combat_test.tscn` is a bounded 640×360 room with one selected opponent. Keyboard 1/2/3 and HUD buttons select the trial. R or death reconstructs the current opponent, restores the player, repairs the bridge and clears intro/victory/exit flags. The room does not change M2 checkpoint/rune state because M2 remains a separate scene.
+
+The Troll's real Area2D trigger begins its intro. Charged smash removes a two-tile-wide, four-tile-deep bridge patch only if its strike reaches the patch, and never expands that destruction on subsequent hits. The player can jump the gap; falls use the same encounter retry flow. Death signals unlock the Troll exit and start a short trial-completion sequence. `CombatHUD` binds boss health and state signals, with shared drawn heart icons and explicit danger/phase labels.
+
+## Art handoff / future M5
+
+The provisional sprite strips and background layers are imported under `assets/` but do not replace M3 presentation. `asset_manifest.json` and the hero manifest define dimensions, frames and anchor contracts. Producer scripts are preserved as provenance, not executed. Concept references stay outside runtime imports/exports. M5 acceptance is defined in `specs.md` and `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`; package import is not visual acceptance.

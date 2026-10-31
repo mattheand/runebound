@@ -1,10 +1,10 @@
-# Verification — M0, M1 and M2
+# Verification — M0 through M3 and provisional art intake
 
 ## Environment
 
 - Godot `4.7.2.stable.official.ed1daf0bf`.
 - macOS, Apple M4 Max, native OpenGL Compatibility renderer.
-- Chrome / WebGL 2, single-threaded Emscripten export.
+- Google Chrome `156.0.8078.79` / WebGL 2, single-threaded Emscripten export.
 - Official Godot release binary and matching export templates from GitHub.
 - Homebrew and Apple's Python shim were blocked by the local Xcode license state. The official engine download and existing Homebrew Python 3.13 worked without changing Xcode settings.
 
@@ -14,15 +14,19 @@
 bash tools/check.sh
 ```
 
-The wrapper runs import and startup, then three suites at 30 / 60 / 120 physics ticks per second with matching fixed render rates. It fails for a nonzero process exit **or** Godot script/error diagnostics. Logs go to `build/test-results/`.
+The wrapper runs import, 43 art-contract checks and startup, then seven suites at 30 / 60 / 120 physics ticks per second with matching fixed render rates. It fails for a nonzero process exit **or** Godot script/error diagnostics. Logs go to `build/test-results/`.
 
 | Suite | Checks per rate | Verified result |
 |---|---:|---|
 | `tests/run_tests.gd` — movement regression | 36 | Pass at 30/60/120 Hz |
 | `tests/test_gameplay.gd` — M2 components and lifecycle | 62 | Pass at 30/60/120 Hz |
 | `tests/test_traversal.gd` — complete input-driven M2 route | 22 | Pass at 30/60/120 Hz |
+| `tests/test_enemies.gd` — Draugr/Raven | 34 | Pass at 30/60/120 Hz |
+| `tests/test_boss.gd` — Troll mechanics | 38 | Pass at 30/60/120 Hz |
+| `tests/test_combat_room.gd` — selection/intro/retry/completion | 17 | Pass at 30/60/120 Hz |
+| `tests/test_combat_victory.gd` — standard-input victories | 10 | Pass at 30/60/120 Hz |
 
-**Total: 360 passing assertions, zero failures.** Import/startup and final suite logs contain no engine/script errors or warnings. M0 and M1 were explicitly accepted by the user.
+**Total: 700 passing assertions** (219 × 3 tick rates + 43 art-contract checks), zero failures. Import/startup and suite logs contain no engine/script errors or warnings. M0–M2 were explicitly accepted by the user. Before M3 work, M2 was fast-forward merged into `main` at `856a666` and all 360 pre-art/pre-M3 assertions were rerun green on main.
 
 ### Movement regression
 
@@ -70,13 +74,40 @@ The suite started with failing checks before each implementation stage. Fixed-FP
 
 Read-only code review found no actionable M2 functional issues and independently reran the 62-check gameplay suite at 60 Hz. Final presentation corrections were subsequently covered by the complete test run and browser inspection.
 
+### M3 enemy and boss mechanics
+
+- Draugr: bounded patrol, detection/chase, physical line-of-sight occlusion, ledge avoidance, wind-up/active/recovery melee, hurt interruption/knockback, dead-target rejection, death/reset.
+- Raven: level patrol, warned attack, fixed aim without homing, recovery damage shutdown, route/altitude return, contact damage once per dive, hurt/death/reset.
+- Troll: dormant/intro protections, idempotent encounter start, activation, normal sword damage without stun-lock, all three predictable patterns and their no-early-damage/active/recovery windows, charged-smash event, death and reset.
+- Combat room: actual menu and selector inputs, safe spawn, real intro trigger and boss bar, health updates, charged-smash removal of bridge collision, restored bridge/health/intro on retry, exit unlock/trial completion, fall retry and menu return.
+
+Initial failing scene/behavior checks preceded each implementation step. The real trigger test exposed a frame-late boss-bar visibility update; binding visibility to enemy state signals fixed it. Read-only review found no actionable M3 functional issues and independently passed all 99 M3 checks at 60 Hz.
+
+### Standard-input victories
+
+`test_combat_victory.gd` fights the actual opponents in the shipped room using only movement, jump and fresh sword input. Trial selection uses the same public selector as the UI. The fights do not teleport, alter health/tuning, disable collisions or invoke damage/death directly. The test fighter closes distance, faces its sword correctly after braking, jumps Raven attacks and times jumps against the Troll wind-up.
+
+All three enemies were defeated with **3/3 hearts and no retries** at 30/60/120 Hz. Troll victories took approximately 7.4–7.6 simulated seconds of test-fighter input and completed the trial/unlocked the exit. This proves a standard-ability winning route; it is not a human difficulty or performance assessment.
+
+### Art intake
+
+`test_art_import.gd` verifies 43 metadata/dimension/transparency contracts for the supplied PNGs. It does not judge fidelity or seamless parallax. See `handoff/ART_HANDOFF_INTEGRATION.md`. M5 remains deferred behind its ten-criterion human visual gate.
+
 ## Native rendering
 
 ```bash
 bash tools/godot.sh --script tools/capture_preview.gd
 ```
 
-This opens the M2 scene in a real rendering window, waits for physics and drawing, then saves `build/screenshots/native-gameplay.png`. Native macOS rendering was verified and the M2 terrain, hero, hearts, rune HUD and scenery inspected. Add `-- --movement` to capture the original M1 scene.
+This opens the M3 scene in a real rendering window, waits for physics and drawing, then saves `build/screenshots/native-gameplay.png`. Add `-- --opponent=troll` or `-- --opponent=raven` for an approached opponent capture, `-- --gameplay` for M2, or `-- --movement` for M1.
+
+To reproduce the rendered standard-input Troll victory and short native recording:
+
+```bash
+bash tools/godot.sh --write-movie build/m3-troll-victory.avi --fixed-fps 60 --script tools/capture_combat_victory.gd
+```
+
+The capture run defeated the Troll with 3/3 hearts and no retries, saved `build/screenshots/native-m3-victory.png` and recorded 573 frames at 60 FPS (about 9.6 seconds) of actual Godot gameplay. The recording's render speed is not a sustained gameplay-performance claim.
 
 ## Web export and smoke test
 
@@ -97,6 +128,8 @@ CHROME="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" \
 node tests/browser_smoke.cjs
 ```
 
+Run `tests/browser_combat.cjs` with the same environment for M3. The M2 smoke test explicitly selects the second menu entry; M3 remains the default.
+
 Alternatively omit `CHROME` when Playwright's Chromium is installed. `GAME_URL` overrides the default `http://127.0.0.1:8765`.
 
 The browser test checks that the loader completes, collects runtime/resource/HTTP errors and sends Enter, D, Space twice, J, R and Escape. It verifies that movement changes the rendered image, approaches the first dummy, attacks and walks into spikes. Inspect captures in `build/screenshots/`; pixel changes alone are not proof of each mechanic.
@@ -107,12 +140,14 @@ Browser inspection caught native-only fallback font support for Unicode hearts. 
 
 The first browser run caught a missing exported `player_tuning.gd`; exporting all runtime resources with explicit development exclusions fixed it. The final Chrome smoke run reported no runtime/resource/HTTP errors.
 
+M3 Chrome smoke also passes with no runtime/resource/HTTP errors. Captures cover selector changes, a hurt Draugr after a sword hit, the Raven warning/aim line, Troll introduction and reduced boss health, slam/jump, retry and the three-entry menu. Inspect `browser-m3-*.png` under `build/screenshots/`. Boss-bar styling was adjusted after visual inspection so its default theme minimum size could not overlap the message row. Runtime state/damage correctness is asserted by the Godot suites, not inferred only from changing pixels.
+
 ## Remaining manual/compatibility checks
 
-1. Judge M2 sword timing, damage feedback, respawn pacing and temporary sound mix by hand.
-2. Use J against a dummy; repeated overlapping active frames should remove only one dummy health pip per swing.
-3. Collect a rune, activate a checkpoint, take fatal damage or fall, and confirm full health and preserved runes at that checkpoint.
-4. Verify gamepad stick/D-pad, A jump, X sword, LB checkpoint and Start menu on physical hardware.
+1. Review M3 difficulty, telegraph clarity, Raven counterplay, boss recovery windows and temporary sound balance.
+2. Fight each type with normal inputs; retry during attacks/death and switch trials using the selector.
+3. Check all Troll patterns, jumping the smash/slam, bridge damage/repair and the defeat/exit sequence.
+4. Verify gamepad stick/D-pad, A jump, X sword, LB retry and Start menu on physical hardware.
 5. Check Firefox/Safari, other browser/window sizes, and desktop targets as available.
 
-Firefox, Safari, Windows, Linux, hardware gamepads and sustained 60 FPS performance remain untested. M0/M1 are accepted; these are outstanding compatibility checks, not an open movement acceptance gate. Audio playback paths ran without errors, but subjective sound quality/mix is not an automated test claim.
+Firefox, Safari, Windows, Linux, hardware gamepads and sustained 60 FPS performance remain untested. M0–M2 are accepted; M3 awaits human review. Audio playback paths ran without errors, but subjective sound quality/mix is not an automated test claim. M4/M5 stay deferred.

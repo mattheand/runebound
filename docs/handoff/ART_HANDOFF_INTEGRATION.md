@@ -19,7 +19,7 @@ All 32 archive files were inspected/extracted without overwriting differing exis
 - `docs/handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`: canonical visual acceptance requirements; the identical supplied root copy is retained.
 - `tools/art_handoff/`: original producer scripts retained as provenance, not executed during intake.
 
-The original ZIP is retained locally and ignored to avoid tracking the same payload twice. Extracted assets, metadata, source scripts and documentation are tracked. Concept references remain under `docs/.gdignore` and the existing docs export exclusion.
+The original ZIP was already staged with the supplied files and is preserved in Git as the source-package provenance, alongside the extracted assets, metadata, producer scripts and documentation. It is not used as a runtime resource. Concept references remain under `docs/.gdignore` and the existing docs export exclusion.
 
 ## Status and integration constraints
 

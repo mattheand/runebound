@@ -35,9 +35,16 @@
 
 **Acceptance:** user approved M2, subject to hands-on feedback. `feat/m2-core-gameplay` was fast-forward merged into `main` at `856a666`, the 360-check suite passed on the merged result, and main was pushed.
 
-## M3 — Enemies and boss: in progress
+## M3 — Enemies and boss: implemented and verified, awaiting review
 
-Implement in order: Draugr, Raven, Bridge Troll, then a combat-testing room. Use reusable health/damage components, configurable tuning and temporary visuals. Preserve M0–M2 and verify enemy state transitions, attacks, boss defeat and retry. M4/M5 stay blocked until M3 is reviewed and accepted.
+- Draugr: bounded patrol, sight-based detection/chase, telegraphed melee, hurt/knockback and death.
+- Raven: flight patrol, fixed-aim warning/dive, recovery/route return, hurt and death.
+- Bridge Troll: introduction/health bar, predictable slam/club/charged-smash cycle, recovery, damage, bounded bridge breakage and defeat/exit sequence.
+- Shared enemy lifecycle, existing health/hurtbox/hitbox ownership, exported tuning and attack profiles.
+- Selectable combat room with 1/2/3 opponent selection, R retry and automatic death reset. Previous M1/M2 scenes remain selectable.
+- Verification: 700 assertions pass, covering prior gameplay, art contracts and M3 at 30/60/120 physics Hz. Standard-input tests defeat every type with default health/sword/jumps and no retries. Chrome/native captures and a recorded Troll victory provide runtime evidence.
+
+**Next action:** user hands-on M3 review and balance/telegraph feedback. M4/M5 stay blocked until M3 is reviewed and accepted.
 
 ## M5 — Visual polish: deferred, mandatory visual acceptance gate
 

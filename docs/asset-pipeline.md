@@ -1,8 +1,10 @@
-# Asset pipeline — through M2
+# Asset pipeline — through M3 and Art Handoff v1 intake
 
 ## Source direction
 
 Read `design/RUNEBOUND_Visual_References/ART_DIRECTION.md` and its `contact_sheet.webp` before replacing visuals. The art-direction file was supplied inside that folder, rather than directly in `docs/design/` as referenced by `AGENTS.md`.
+
+The additional handoff now also supplies `design/ART_DIRECTION.md`, `design/hero_reference_approved.png`, the canonical concept files and `handoff/M5_VISUAL_GATE_AGENT_PROMPT.md`. Its extracted prototype assets and manifests are available under `assets/` and `asset_manifest.json`. See `handoff/ART_HANDOFF_INTEGRATION.md` for exact placement, provenance and import validation. The original reference directory remains intact.
 
 The supplied four concept images and contact sheet remain intact. No HTML/JavaScript prototype or production sprite sheets were present in the initial workspace.
 
@@ -20,12 +22,16 @@ All current gameplay visuals are original programmatic placeholders:
 | Checkpoint / rune / dummy / spikes | Their scripts under `scenes/interactables/` and `scenes/collectibles/` | Independently drawn placeholders |
 | HUD hearts | `scenes/ui/heart_display.gd` | 16 × 15 polygon icon, 23px spacing |
 | Short SFX | `scripts/components/sound_cue.gd` | Original 22,050 Hz, 16-bit mono generated cues |
+| Draugr / Raven / Troll | `scenes/enemies/enemy_visual.gd` | Separate temporary silhouettes; profile rectangles visualize actual attack regions |
+| Combat-room bridge | `scenes/levels/combat_floor.gd` | 16px planks over independent TileMapLayer collision |
 
 Hero identity: blond `#e9be62`, blue tunic `#367ea8`, red cape `#d44a4f`, brown leather and a small shield. Terrain uses dark slate `#263b44` / `#3d5055` and moss `#648850` / `#a4b56a`. Pale mountain silhouettes contrast with solid playable surfaces. Air-jump feedback uses cyan.
 
 Godot's default UI font and engine-generated web icons are used. Hearts are geometry rather than Unicode glyphs because the Web runtime lacks the native fallback font that supplied them. No third-party gameplay sprites or audio were imported. The game export omits concept references and development captures.
 
 Production visual assets are being developed separately. Keep these implementations as functional placeholders until those assets are ready; preserve component signal interfaces and sword hit timing when swapping presentation.
+
+The imported handoff is also provisional. The current M3 enemies and active player/background presentation still use temporary draws. No final-quality claim follows from import. During M5, produce actual Godot screenshots and a recording, compare side by side to approved concepts using all ten criteria in `specs.md`, fix significant differences and obtain human visual acceptance. Animation art must respect existing attack timing; parallax layers require seam verification before repeating.
 
 ## Replacing placeholders later
 
