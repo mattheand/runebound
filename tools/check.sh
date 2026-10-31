@@ -13,6 +13,7 @@ run_check() {
 }
 run_check import --headless --editor --import
 run_check art-contract --headless --script res://tests/test_art_import.gd
+run_check enemy-art-sources --headless --script res://tests/test_enemy_art_sources.gd
 run_check startup --headless --quit-after 10
 for ticks in 30 60 120; do
   run_check "physics-$ticks" --headless --fixed-fps "$ticks" \

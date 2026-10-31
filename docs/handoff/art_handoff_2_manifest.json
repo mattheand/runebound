@@ -1,0 +1,73 @@
+{
+  "version": "2.0.0",
+  "status": "art source sheets, NOT validated uniform-frame atlases",
+  "engine": "Godot 4.7.2",
+  "entries": {
+    "bridge_troll": {
+      "sheet": "assets/characters/enemies/bridge_troll/source_animation_sheet.png",
+      "reference": "docs/design/enemies/bridge_troll_reference.png",
+      "source_dimensions": [
+        1448,
+        1086
+      ],
+      "source_alpha": true,
+      "suggested_frame_canvas": [
+        96,
+        96
+      ],
+      "intended_animation_frame_counts": {
+        "idle": 4,
+        "walk": 6,
+        "ground_slam": 6,
+        "club_swing": 6,
+        "charged_smash": 6,
+        "hurt": 2,
+        "death": 6
+      },
+      "note": "Frames have artistically arranged variable spacing/sizing and must be segmented, aligned, normalized and visually verified before AnimatedSprite2D use."
+    },
+    "draugr": {
+      "sheet": "assets/characters/enemies/draugr/source_animation_sheet.png",
+      "reference": "docs/design/enemies/draugr_reference.png",
+      "source_dimensions": [
+        1448,
+        1086
+      ],
+      "source_alpha": true,
+      "suggested_frame_canvas": [
+        48,
+        48
+      ],
+      "intended_animation_frame_counts": {
+        "idle": 4,
+        "walk": 6,
+        "attack": 6,
+        "hurt": 2,
+        "death": 6
+      },
+      "note": "Frames have artistically arranged variable spacing/sizing and must be segmented, aligned, normalized and visually verified before AnimatedSprite2D use."
+    },
+    "raven": {
+      "sheet": "assets/characters/enemies/raven/source_animation_sheet.png",
+      "reference": "docs/design/enemies/raven_reference.png",
+      "source_dimensions": [
+        1448,
+        1086
+      ],
+      "source_alpha": true,
+      "suggested_frame_canvas": [
+        48,
+        48
+      ],
+      "intended_animation_frame_counts": {
+        "hover": 4,
+        "fly": 6,
+        "dive_telegraph": 3,
+        "dive": 4,
+        "hurt": 2,
+        "death": 4
+      },
+      "note": "Frames have artistically arranged variable spacing/sizing and must be segmented, aligned, normalized and visually verified before AnimatedSprite2D use."
+    }
+  }
+}
